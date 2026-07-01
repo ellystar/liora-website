@@ -4,10 +4,13 @@ import { useRef, useState } from "react";
 
 type Errors = { name?: string; email?: string; message?: string };
 
+type Status = "idle" | "sending" | "sent" | "error";
+
 export default function ContactForm() {
   const [values, setValues] = useState({ name: "", email: "", message: "" });
+  const [company, setCompany] = useState(""); // honeypot — stays empty for humans
   const [errors, setErrors] = useState<Errors>({});
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
 
   const refs = {
     name: useRef<HTMLInputElement>(null),
@@ -30,25 +33,31 @@ export default function ContactForm() {
     return e;
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const found = validate();
     if (Object.keys(found).length) {
       setErrors(found);
-      (["name", "email", "message"] as const)
-        .find((k) => found[k]) &&
-        refs[(["name", "email", "message"] as const).find((k) => found[k])!].current?.focus();
+      const first = (["name", "email", "message"] as const).find((k) => found[k]);
+      if (first) refs[first].current?.focus();
       return;
     }
-    const subject = encodeURIComponent(`A conversation — ${values.name}`);
-    const body = encodeURIComponent(
-      `${values.message}\n\n— ${values.name}\n${values.email}`
-    );
-    window.location.href = `mailto:info@lioralabs.io?subject=${subject}&body=${body}`;
-    setSent(true);
+
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, company }),
+      });
+      if (!res.ok) throw new Error("send failed");
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+    }
   };
 
-  if (sent) {
+  if (status === "sent") {
     return (
       <div
         className="rounded-[2px] border border-white/15 bg-white/[0.05] p-8"
@@ -57,8 +66,8 @@ export default function ContactForm() {
       >
         <p className="d3 text-on-dark">Thank you — the conversation is open.</p>
         <p className="body mt-3 !text-on-dark-mut">
-          Your mail client should be opening. If it doesn&apos;t, write to us
-          directly at{" "}
+          We&apos;ve received your note and will be in touch soon. If it&apos;s
+          urgent, write to us directly at{" "}
           <a href="mailto:info@lioralabs.io" className="link-inline">
             info@lioralabs.io
           </a>
@@ -128,19 +137,52 @@ export default function ContactForm() {
         />
       </Field>
 
+      {/* Honeypot — hidden from people, tempting to bots. Left empty = human. */}
+      <div aria-hidden="true" className="hp-field">
+        <label htmlFor="company">Company</label>
+        <input
+          id="company"
+          name="company"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
+      </div>
+
       <div className="pt-1">
         <button
           type="submit"
-          className="group/cta inline-flex items-center gap-2.5 rounded-[2px] border border-bone bg-bone px-[22px] py-[14px] font-ui text-sm font-medium leading-none text-ink transition-colors duration-300 ease-liora hover:border-oxblood hover:bg-oxblood hover:text-bone focus-visible:outline-2"
+          disabled={status === "sending"}
+          aria-busy={status === "sending"}
+          className="group/cta inline-flex items-center gap-2.5 rounded-[2px] border border-bone bg-bone px-[22px] py-[14px] font-ui text-sm font-medium leading-none text-ink transition-colors duration-300 ease-liora hover:border-oxblood hover:bg-oxblood hover:text-bone focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <span>Start the conversation</span>
+          <span>{status === "sending" ? "Sending…" : "Start the conversation"}</span>
           <span aria-hidden="true" className="transition-transform duration-300 ease-liora group-hover/cta:translate-x-1">
             →
           </span>
         </button>
       </div>
 
+      {status === "error" && (
+        <p role="alert" className="text-[12.5px] text-[var(--oxblood-on-dark)]">
+          Something went wrong on our side. Please write to us directly at{" "}
+          <a href="mailto:info@lioralabs.io" className="link-inline">
+            info@lioralabs.io
+          </a>
+          .
+        </p>
+      )}
+
       <style jsx>{`
+        .hp-field {
+          position: absolute;
+          left: -9999px;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+        }
         :global(.input) {
           width: 100%;
           border-radius: 2px;

@@ -3,6 +3,10 @@
 /.pnp
 .pnp.js
 
+# pnpm regenerates a placeholder workspace file on `pnpm add`; this is a single
+# package (no workspace) and the placeholder is malformed — keep it out of git.
+/pnpm-workspace.yaml
+
 # next.js
 /.next/
 /out/
