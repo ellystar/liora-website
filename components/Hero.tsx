@@ -22,7 +22,12 @@ export default function Hero() {
           <a className="btn" href="mailto:info@lioralabs.io?subject=Working%20with%20Liora">
             Get in touch <span className="ar">&rarr;</span>
           </a>
-          <a className="btn ghost" href="#horizon">
+          <a
+            className="btn ghost"
+            href="https://atelier.lioralabs.io/login"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Explore the Atelier <span className="ar">&rarr;</span>
           </a>
         </div>

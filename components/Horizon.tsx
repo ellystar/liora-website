@@ -19,7 +19,9 @@ export default function Horizon() {
               Private beta
             </p>
             <a
-              href="mailto:info@lioralabs.io?subject=Liora%20Atelier%20access"
+              href="https://atelier.lioralabs.io/login"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group/req mt-6 inline-flex w-fit items-center gap-1.5 border-b border-gold pb-0.5 font-ui text-[14px] text-ink transition-colors duration-300 ease-liora hover:text-gold"
             >
             Request access
