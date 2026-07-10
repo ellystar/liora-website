@@ -92,27 +92,43 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-[clamp(48px,7vw,80px)] flex flex-col gap-4 border-t border-stone pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-5">
-            <p className="font-mono text-[11px] text-text-mut">© {year} Liora.</p>
-            <p className="font-mono text-[11px] text-text-mut/70">
-              Preserve and author.
-            </p>
+        <div className="mt-[clamp(48px,7vw,80px)] border-t border-stone pt-7">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-5">
+              <p className="font-mono text-[11px] text-text-mut">© {year} Liora.</p>
+              <p className="font-mono text-[11px] text-text-mut/70">
+                Preserve and author.
+              </p>
+            </div>
+            <nav
+              aria-label="Legal"
+              className="flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] text-text-mut"
+            >
+              <Link href="/gizlilik" className="link-underline hover:text-text">
+                Privacy Policy
+              </Link>
+              <span aria-hidden="true">·</span>
+              <Link
+                href="/mesafeli-satis"
+                className="link-underline hover:text-text"
+              >
+                Distance Sales Agreement
+              </Link>
+              <span aria-hidden="true">·</span>
+              <Link
+                href="/iade-sartlari"
+                className="link-underline hover:text-text"
+              >
+                Delivery &amp; Return Terms
+              </Link>
+              <span aria-hidden="true">·</span>
+              <CookieSettingsButton className="link-underline transition-colors duration-300 ease-liora hover:text-text" />
+            </nav>
           </div>
-          <nav
-            aria-label="Legal"
-            className="flex items-center gap-3 font-mono text-[11px] text-text-mut"
-          >
-            <Link href="/privacy" className="link-underline hover:text-text">
-              Privacy Policy
-            </Link>
-            <span aria-hidden="true">·</span>
-            <Link href="/terms" className="link-underline hover:text-text">
-              Terms of Use
-            </Link>
-            <span aria-hidden="true">·</span>
-            <CookieSettingsButton className="link-underline transition-colors duration-300 ease-liora hover:text-text" />
-          </nav>
+          <p className="mt-5 font-mono text-[10.5px] leading-relaxed text-text-mut/60">
+            Elif Yıldız – Melis Doğan Adi Ortaklığı · VKN 6081844358 ·
+            Kestel/Bursa
+          </p>
         </div>
       </div>
     </footer>

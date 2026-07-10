@@ -9,10 +9,16 @@ export default function LegalLayout({
   title,
   updated,
   children,
+  kicker = "Legal",
+  updatedLabel = "Last updated",
+  backLabel = "Back to home",
 }: {
   title: string;
   updated: string;
   children: React.ReactNode;
+  kicker?: string;
+  updatedLabel?: string;
+  backLabel?: string;
 }) {
   return (
     <>
@@ -35,7 +41,7 @@ export default function LegalLayout({
             >
               ←
             </span>
-            Back to home
+            {backLabel}
           </Link>
         </div>
       </header>
@@ -43,9 +49,11 @@ export default function LegalLayout({
       <main id="main" className="bg-bone">
         <article className="wrap py-[clamp(56px,9vw,120px)]">
           <header className="mb-[clamp(36px,5vw,56px)] max-w-[68ch] border-b border-stone/60 pb-[clamp(28px,4vw,40px)]">
-            <p className="meta mb-5">Legal</p>
+            <p className="meta mb-5">{kicker}</p>
             <h1 className="d2 text-ink">{title}</h1>
-            <p className="meta mt-6">Last updated · {updated}</p>
+            <p className="meta mt-6">
+              {updatedLabel} · {updated}
+            </p>
           </header>
           <div className="legal-prose max-w-[68ch]">{children}</div>
         </article>

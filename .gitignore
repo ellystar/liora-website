@@ -48,3 +48,9 @@ next-env.d.ts
 /PROJECT_STATUS.md
 /liora-lexicon*.md
 /liora-master-strategy*.md
+
+# provided legal source drops — content now lives in the app/(gizlilik|
+# mesafeli-satis|iade-sartlari)/page.tsx pages (rendered via react-markdown)
+/gizlilik-politikasi.md
+/mesafeli-satis-sozlesmesi.md
+/teslimat-ve-iade-sartlari.md

@@ -57,7 +57,7 @@ export default function CookieConsent() {
           may also use analytics to understand what resonates — decline and
           nothing is lost.{" "}
           <Link
-            href="/privacy"
+            href="/gizlilik"
             className="text-on-dark underline decoration-gold underline-offset-2 transition-colors duration-300 ease-liora hover:text-gold"
           >
             Privacy Policy
