@@ -1,0 +1,24 @@
+# Liora Labs
+
+> An AI-native creative systems lab for fashion, beauty and design-led brands. AI can generate visuals; only aesthetic intelligence can preserve a brand.
+
+Liora Labs (also referred to simply as "Liora") designs bespoke, AI-native visual systems for fashion, beauty and design-led brands — from custom visual production to full campaign and commerce imagery. Liora Atelier is the private platform where brands create high-quality, on-brand imagery at scale.
+
+- Brand: Liora Labs
+- Website: https://lioralabs.io
+- Platform: https://atelier.lioralabs.io
+- Contact: info@lioralabs.io
+
+## Pages
+- [Home](https://lioralabs.io/): What Liora builds, selected systems, and the Atelier platform.
+- [ADV — Visual Launch System](https://lioralabs.io/work/adv): Case study — launching a 250-product fashion brand for ADV (Orka Holding) in 72 hours, with no photoshoot, using a reusable AI-native visual system.
+
+## Legal
+- [Privacy Policy (KVKK)](https://lioralabs.io/gizlilik): Personal data protection and privacy notice (Turkish).
+- [Distance Sales Agreement](https://lioralabs.io/mesafeli-satis): Terms for Liora Atelier digital purchases (Turkish).
+- [Delivery & Return Terms](https://lioralabs.io/iade-sartlari): Delivery and refund conditions (Turkish).
+
+## More
+- [Sitemap](https://lioralabs.io/sitemap.xml)
+- [LinkedIn](https://www.linkedin.com/company/liora1/)
+- [Instagram](https://www.instagram.com/lioralabs.io/)
