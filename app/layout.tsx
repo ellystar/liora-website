@@ -45,6 +45,25 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Organization schema — helps Google connect "Liora Labs" / "Liora" searches to
+// the brand (logo, description, official social profiles), improving branded
+// search and the odds of a knowledge/brand card.
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Liora Labs",
+  alternateName: "Liora",
+  url: "https://lioralabs.io",
+  logo: "https://lioralabs.io/icon.png",
+  description:
+    "An AI-native creative systems lab for fashion, beauty and design-led brands.",
+  email: "info@lioralabs.io",
+  sameAs: [
+    "https://www.linkedin.com/company/liora1/",
+    "https://www.instagram.com/lioralabs.io/",
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -56,6 +75,12 @@ export default function RootLayout({
       className={`js ${newsreader.variable} ${neueHaas.variable} ${splineMono.variable}`}
     >
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
+        />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[1000] focus:rounded focus:bg-ink focus:px-4 focus:py-2 focus:text-on-dark"

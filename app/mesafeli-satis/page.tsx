@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Mesafeli Satış Sözleşmesi",
   description:
     "Liora Atelier dijital kredi ve abonelik satışlarına ilişkin mesafeli satış sözleşmesi.",
+  alternates: { canonical: "/mesafeli-satis" },
 };
 
 const content = `## Madde 1 — Taraflar

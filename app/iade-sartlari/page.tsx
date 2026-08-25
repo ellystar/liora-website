@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Teslimat ve İade Şartları",
   description:
     "Liora Atelier dijital kredi ve abonelik satışlarına ilişkin teslimat ve iade koşulları.",
+  alternates: { canonical: "/iade-sartlari" },
 };
 
 const content = `Bu sayfa, **atelier.lioralabs.io** ("Liora Atelier") üzerinden satın alınan dijital kredi paketleri ve abonelik planlarına ilişkin teslimat ve iade koşullarını açıklar. Satıcı: **Elif Yıldız – Melis Doğan Adi Ortaklığı** (Gökdere V.D. / VKN 6081844358).

@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Gizlilik Politikası",
   description:
     "Liora Atelier — KVKK kapsamında kişisel verilerin korunması ve gizlilik politikası.",
+  alternates: { canonical: "/gizlilik" },
 };
 
 const content = `## 1. Veri Sorumlusu
