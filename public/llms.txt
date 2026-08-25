@@ -2,12 +2,26 @@
 
 > An AI-native creative systems lab for fashion, beauty and design-led brands. AI can generate visuals; only aesthetic intelligence can preserve a brand.
 
-Liora Labs (also referred to simply as "Liora") designs bespoke, AI-native visual systems for fashion, beauty and design-led brands — from custom visual production to full campaign and commerce imagery. Liora Atelier is the private platform where brands create high-quality, on-brand imagery at scale.
+Liora Labs (also referred to simply as "Liora") designs bespoke, AI-native visual systems for fashion, beauty and design-led brands. Rather than one-off AI images, Liora builds a reusable visual system per brand — one that scales a brand's imagery across catalog, campaign and commerce without losing what makes it itself. Liora Atelier is the private platform where brands create high-quality, on-brand imagery at scale.
 
 - Brand: Liora Labs
 - Website: https://lioralabs.io
 - Platform: https://atelier.lioralabs.io
 - Contact: info@lioralabs.io
+- Based in Turkey, working globally
+- Founders: Melis Dogan (Creative Director), Elif Yildiz (Product Manager)
+
+## Services
+- **Visual Systems** — On-brand imagery and video systems for catalog, campaign and commerce.
+- **Campaign & Commerce** — Turning brand imagery into a connected campaign and commerce ecosystem.
+- **Creative Residency** — An external creative systems team, embedded long-term.
+
+## About
+- **What is Liora Labs?** An AI-native creative systems lab that builds bespoke visual production systems for fashion, beauty and design-led brands.
+- **Who is it for?** Fashion, beauty and design-led brands that need to scale their imagery while staying on-brand.
+- **What makes Liora different?** Liora does not just generate images — it engineers a reusable, on-brand visual system per client, led by aesthetic direction rather than generic AI output.
+- **What is Liora Atelier?** A private platform (currently in private beta, by request) where brands create high-quality, on-brand imagery at scale.
+- **How do you work with Liora?** Email info@lioralabs.io, or use the contact form at https://lioralabs.io.
 
 ## Pages
 - [Home](https://lioralabs.io/): What Liora builds, selected systems, and the Atelier platform.

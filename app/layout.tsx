@@ -45,23 +45,78 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// Organization schema — helps Google connect "Liora Labs" / "Liora" searches to
-// the brand (logo, description, official social profiles), improving branded
-// search and the odds of a knowledge/brand card.
+// Organization / ProfessionalService schema — helps search engines and AI
+// agents connect "Liora Labs" / "Liora" to the brand and understand what it
+// does (services, founders, expertise) without guessing. Strengthens branded
+// search, knowledge/brand cards, and answer-engine (AEO) understanding.
 const organizationSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
+  "@type": ["Organization", "ProfessionalService"],
   name: "Liora Labs",
   alternateName: "Liora",
   url: "https://lioralabs.io",
   logo: "https://lioralabs.io/icon.png",
   description:
     "An AI-native creative systems lab for fashion, beauty and design-led brands.",
+  slogan: "Scale without losing soul.",
   email: "info@lioralabs.io",
+  areaServed: "Worldwide",
+  knowsAbout: [
+    "AI-native visual production",
+    "Fashion and beauty imagery",
+    "Brand visual systems",
+    "Creative direction",
+    "Campaign and commerce imagery",
+    "AI image and video generation",
+  ],
+  founder: [
+    {
+      "@type": "Person",
+      name: "Melis Dogan",
+      jobTitle: "Co-Founder · Creative Director",
+    },
+    {
+      "@type": "Person",
+      name: "Elif Yildiz",
+      jobTitle: "Co-Founder · Product Manager",
+    },
+  ],
   sameAs: [
     "https://www.linkedin.com/company/liora1/",
     "https://www.instagram.com/lioralabs.io/",
   ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Services",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Visual Systems",
+          description:
+            "On-brand imagery and video systems for catalog, campaign and commerce.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Campaign & Commerce",
+          description:
+            "Turning brand imagery into a connected campaign and commerce ecosystem.",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Creative Residency",
+          description: "An external creative systems team, embedded long-term.",
+        },
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
