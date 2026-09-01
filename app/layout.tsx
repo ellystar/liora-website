@@ -23,6 +23,11 @@ export const metadata: Metadata = {
     "creative direction",
   ],
   authors: [{ name: "Liora" }],
+  verification: {
+    other: {
+      "facebook-domain-verification": "7elvzcjmk5igmhkr0pd1u28tqhautl",
+    },
+  },
   openGraph: {
     title: "Liora — An AI-native creative systems lab for fashion, beauty and design-led brands",
     description:
