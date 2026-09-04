@@ -8,6 +8,7 @@ import FeaturedWork from "@/components/FeaturedWork";
 import Horizon from "@/components/Horizon";
 // import Manifesto from "@/components/Manifesto"; // temporarily removed
 import BuiltBy from "@/components/BuiltBy";
+import Answers from "@/components/Answers";
 import Close from "@/components/Close";
 import Footer from "@/components/Footer";
 
@@ -27,6 +28,7 @@ export default function Home() {
         <FeaturedWork />
         <Horizon />
         <BuiltBy />
+        <Answers />
         <Signature />
         <Close />
       </main>
