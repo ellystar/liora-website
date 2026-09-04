@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Errors = { name?: string; email?: string; message?: string };
 
@@ -11,6 +11,14 @@ export default function ContactForm() {
   const [company, setCompany] = useState(""); // honeypot — stays empty for humans
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
+  // Until React hydrates, a click falls through to a *native* form submission:
+  // the browser reloads the page with the fields in the query string and sends
+  // nothing, so the visitor sees an empty form and assumes it is broken. Keep
+  // the button inert until we are live (this also blocks Enter-to-submit).
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(true);
+  }, []);
 
   const refs = {
     name: useRef<HTMLInputElement>(null),
@@ -137,12 +145,15 @@ export default function ContactForm() {
         />
       </Field>
 
-      {/* Honeypot — hidden from people, tempting to bots. Left empty = human. */}
+      {/* Honeypot — hidden from people, tempting to bots. Left empty = human.
+          Deliberately NOT named "company"/"organization": browsers and password
+          managers autofill those even off-screen, which would silently discard a
+          real enquiry. The JSON key stays `company` for the API contract. */}
       <div aria-hidden="true" className="hp-field">
-        <label htmlFor="company">Company</label>
+        <label htmlFor="liora-ref">Leave this field empty</label>
         <input
-          id="company"
-          name="company"
+          id="liora-ref"
+          name="liora-ref"
           type="text"
           tabIndex={-1}
           autoComplete="off"
@@ -154,9 +165,11 @@ export default function ContactForm() {
       <div className="pt-1">
         <button
           type="submit"
-          disabled={status === "sending"}
+          disabled={!ready || status === "sending"}
           aria-busy={status === "sending"}
-          className="group/cta inline-flex items-center gap-2.5 rounded-[2px] border border-bone bg-bone px-[22px] py-[14px] font-ui text-sm font-medium leading-none text-ink transition-colors duration-300 ease-liora hover:border-oxblood hover:bg-oxblood hover:text-bone focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-60"
+          className={`group/cta inline-flex items-center gap-2.5 rounded-[2px] border border-bone bg-bone px-[22px] py-[14px] font-ui text-sm font-medium leading-none text-ink transition-colors duration-300 ease-liora hover:border-oxblood hover:bg-oxblood hover:text-bone focus-visible:outline-2 ${
+            status === "sending" ? "cursor-not-allowed opacity-60" : ""
+          }`}
         >
           <span>{status === "sending" ? "Sending…" : "Start the conversation"}</span>
           <span aria-hidden="true" className="transition-transform duration-300 ease-liora group-hover/cta:translate-x-1">

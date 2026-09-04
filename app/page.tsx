@@ -28,8 +28,8 @@ export default function Home() {
         <FeaturedWork />
         <Horizon />
         <BuiltBy />
-        <Answers />
         <Signature />
+        <Answers />
         <Close />
       </main>
       <Footer />
