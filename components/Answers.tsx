@@ -1,16 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import Reveal from "./Reveal";
 
 /**
  * The questions brands actually ask, answered plainly.
  *
- * Deliberately typographic — no accordions, no cards, no chevrons. A question
- * on the left, its answer on the right, separated by hairlines: the same DNA as
- * the engagements list in Selected Systems.
+ * A disclosure list, but deliberately not a support-desk accordion: no cards,
+ * no shadows, no chevrons. A question in display serif, a hairline beneath it,
+ * and a "+" drawn from two hairlines that turns into a "−" as it opens. One
+ * answer at a time, so it reads like a curated wall label rather than an FAQ.
  *
- * Each answer opens with the answer itself, so a passage can stand alone when
- * it is quoted out of context (search snippets, AI answers). The FAQPage
- * structured data below is generated from this same list, so the markup can
- * never drift from what a visitor reads.
+ * Each answer opens with the answer itself, so a passage still stands alone
+ * when it is quoted out of context (search snippets, AI answers). Closed
+ * answers stay in the DOM — the panel animates its height, never unmounts —
+ * so crawlers and answer engines read all six either way. The FAQPage
+ * structured data is generated from this same list, so the markup can never
+ * drift from what a visitor reads.
  */
 const FAQS = [
   {
@@ -50,6 +56,9 @@ const faqSchema = {
 };
 
 export default function Answers() {
+  // One open at a time; the first is open so the section never reads as empty.
+  const [open, setOpen] = useState<number>(0);
+
   return (
     <section id="answers" className="bg-bone-2">
       <div className="wrap py-[clamp(88px,13vw,164px)]">
@@ -70,17 +79,83 @@ export default function Answers() {
         </Reveal>
 
         <Reveal delay={0.05}>
-          <dl className="border-t border-stone/70">
-            {FAQS.map((f) => (
-              <div
-                key={f.q}
-                className="grid grid-cols-1 gap-x-12 gap-y-3 border-b border-stone/70 py-[clamp(26px,3.4vw,42px)] md:grid-cols-[0.9fr_1.1fr]"
-              >
-                <dt className="d3 max-w-[24ch] text-ink">{f.q}</dt>
-                <dd className="body !max-w-none !text-text-mut">{f.a}</dd>
-              </div>
-            ))}
-          </dl>
+          <ul className="border-t border-stone/70">
+            {FAQS.map((f, i) => {
+              const isOpen = open === i;
+              return (
+                <li
+                  key={f.q}
+                  className={`border-b transition-colors duration-500 ease-liora ${
+                    isOpen ? "border-gold/45" : "border-stone/70"
+                  }`}
+                >
+                  <h3>
+                    <button
+                      type="button"
+                      id={`answer-q-${i}`}
+                      aria-expanded={isOpen}
+                      aria-controls={`answer-p-${i}`}
+                      onClick={() => setOpen(isOpen ? -1 : i)}
+                      className="group flex w-full items-start justify-between gap-8 py-[clamp(22px,2.8vw,34px)] text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
+                    >
+                      <span
+                        className={`d3 max-w-[30ch] transition-colors duration-500 ease-liora ${
+                          isOpen
+                            ? "text-ink"
+                            : "text-ink/65 group-hover:text-ink"
+                        }`}
+                      >
+                        {f.q}
+                      </span>
+
+                      {/* A "+" drawn from two hairlines; the upright stroke
+                          turns and fades away, leaving a "−". */}
+                      <span
+                        aria-hidden="true"
+                        className="relative mt-[0.55em] h-3 w-3 shrink-0"
+                      >
+                        <span
+                          className={`absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 transition-colors duration-500 ease-liora ${
+                            isOpen ? "bg-gold" : "bg-ink/45 group-hover:bg-gold"
+                          }`}
+                        />
+                        <span
+                          className={`absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 transition-[transform,opacity,background-color] duration-500 ease-liora ${
+                            isOpen
+                              ? "rotate-90 bg-gold opacity-0"
+                              : "rotate-0 bg-ink/45 opacity-100 group-hover:bg-gold"
+                          }`}
+                        />
+                      </span>
+                    </button>
+                  </h3>
+
+                  {/* Height animates via grid rows, so the answer is always in
+                      the DOM — only its measured height changes. */}
+                  <div
+                    id={`answer-p-${i}`}
+                    role="region"
+                    aria-labelledby={`answer-q-${i}`}
+                    className={`grid transition-[grid-template-rows] duration-[600ms] ease-liora ${
+                      isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p
+                        className={`body !max-w-[64ch] !text-text-mut pb-[clamp(24px,3vw,38px)] transition-[opacity,transform] duration-[600ms] ease-liora ${
+                          isOpen
+                            ? "translate-y-0 opacity-100"
+                            : "-translate-y-1 opacity-0"
+                        }`}
+                      >
+                        {f.a}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </Reveal>
       </div>
 
