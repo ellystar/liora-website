@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 type Model = {
@@ -195,10 +196,13 @@ export default function AdvCase() {
       {/* 1 · HERO */}
       <section className="chero">
         <div className="media">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/adv-hero.jpg"
             alt="ADV — Noa and Jonas, the brand's two signature models"
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit: "cover", objectPosition: "50% 24%" }}
           />
         </div>
         <div className="scrim" />
@@ -246,11 +250,16 @@ export default function AdvCase() {
             </div>
             <figure className="rawshot reveal">
               <div className="rawshot-img">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/flat-01.jpg"
                   alt="Raw product input — a single ADV garment, shot front-on on a phone"
-                  loading="lazy"
+                  fill
+                  sizes="(max-width: 900px) 92vw, 600px"
+                  style={{
+                    objectFit: "cover",
+                    filter:
+                      "saturate(0.88) contrast(0.96) brightness(1.02) sepia(0.05)",
+                  }}
                 />
                 <div className="rawshot-veil" aria-hidden="true" />
               </div>
@@ -368,12 +377,13 @@ export default function AdvCase() {
         <div className="studio reveal">
           <div className="studio-stage" onMouseLeave={() => setActive(null)}>
             <div className="studio-clip" aria-hidden="true">
-              <img
+              <Image
                 className="studio-bg"
                 src="/visual-language.jpg"
                 alt=""
-                loading="lazy"
-                decoding="async"
+                fill
+                sizes="100vw"
+                style={{ objectFit: "cover", objectPosition: "center" }}
               />
               <div
                 className="studio-spot"

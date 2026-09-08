@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Reveal from "./Reveal";
 
 export default function Horizon() {
@@ -44,11 +45,12 @@ export default function Horizon() {
               className="relative w-full overflow-hidden rounded-[2px]"
               style={{ aspectRatio: "1122 / 1402" }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src="/placeholder.jpg"
                 alt="The Liora Atelier platform — a laptop on stone steps showing an editorial brand website"
-                className="absolute inset-0 h-full w-full object-cover object-center"
+                fill
+                sizes="(max-width: 768px) 92vw, 420px"
+                className="object-cover object-center"
               />
             </div>
             <figcaption className="meta mt-3">

@@ -3,6 +3,9 @@
  * 50/50 split, full uncropped composite bleeding up behind the transparent nav,
  * CSS-only staggered entrance. Styles live in globals.css (.hero / .btn).
  */
+
+import Image from "next/image";
+
 export default function Hero() {
   return (
     <header id="top" className="hero">
@@ -33,11 +36,12 @@ export default function Hero() {
         </div>
       </div>
       <div className="hero-media">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/hero.jpg"
           alt="A contemporary model's face torn along a paper seam into Botticelli's Venus painting - the seam is the reveal."
-          fetchPriority="high"
+          fill
+          priority
+          sizes="(max-width: 900px) 100vw, 60vw"
         />
       </div>
     </header>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Reveal from "./Reveal";
 
 export default function Tension() {
@@ -32,11 +33,12 @@ export default function Tension() {
 
         <Reveal delay={0.15} className="relative">
           <div className="relative mx-auto aspect-[1597/2000] w-full max-w-[420px] overflow-hidden rounded-[2px] border border-white/10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/figure-02.jpg"
               alt="Rows of near-identical classical sculpture heads, one in sharp focus standing apart from the rest"
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              sizes="(max-width: 768px) 92vw, 420px"
+              className="object-cover"
             />
           </div>
         </Reveal>

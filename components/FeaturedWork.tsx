@@ -109,11 +109,12 @@ export default function FeaturedWork() {
             // in preparation — painting stays; hover reveals the line, no link.
             const soonCard = (
               <article className="group/soon relative aspect-[4/5] cursor-default overflow-hidden rounded-[2px] bg-ink">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={w.art}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover object-center grayscale-[0.5] brightness-[0.5] transition duration-700 ease-liora group-hover/soon:brightness-[0.32]"
+                  fill
+                  sizes={CARD_SIZES}
+                  className="object-cover object-center grayscale-[0.5] brightness-[0.5] transition duration-700 ease-liora group-hover/soon:brightness-[0.32]"
                 />
                 <div className="absolute right-4 top-4 z-10 font-mono text-[9.5px] uppercase tracking-[0.18em] text-gold">
                   Coming soon
