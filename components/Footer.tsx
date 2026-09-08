@@ -10,7 +10,7 @@ const EXPLORE = [
 
 const SOCIAL = [
   { label: "LinkedIn", href: "https://www.linkedin.com/company/liora1/" },
-  { label: "Instagram", href: "https://www.instagram.com/lioralabs.io/" },
+  { label: "Instagram", href: "https://www.instagram.com/lioralabs_/" },
 ];
 
 export default function Footer() {

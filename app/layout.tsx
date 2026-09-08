@@ -88,7 +88,7 @@ const organizationSchema = {
   ],
   sameAs: [
     "https://www.linkedin.com/company/liora1/",
-    "https://www.instagram.com/lioralabs.io/",
+    "https://www.instagram.com/lioralabs_/",
   ],
   hasOfferCatalog: {
     "@type": "OfferCatalog",
