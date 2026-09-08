@@ -32,12 +32,14 @@ export const splineMono = Spline_Sans_Mono({
 export const neueHaas = localFont({
   display: "swap",
   variable: "--font-ui",
+  // WOFF2, not TTF: same faces, ~75% smaller. Every declared face is
+  // preloaded, so each one sits on the critical path — only the weights the
+  // site actually uses are listed here (Thin 200 and Black 900 were unused,
+  // and their .woff2 masters stay in /fonts if they are ever needed).
   src: [
-    { path: "../fonts/NeueHaasDisplayThin.ttf", weight: "200", style: "normal" },
-    { path: "../fonts/NeueHaasDisplayLight.ttf", weight: "300", style: "normal" },
-    { path: "../fonts/NeueHaasDisplayRoman.ttf", weight: "400", style: "normal" },
-    { path: "../fonts/NeueHaasDisplayMedium.ttf", weight: "500", style: "normal" },
-    { path: "../fonts/NeueHaasDisplayBold.ttf", weight: "700", style: "normal" },
-    { path: "../fonts/NeueHaasDisplayBlack.ttf", weight: "900", style: "normal" },
+    { path: "../fonts/NeueHaasDisplayLight.woff2", weight: "300", style: "normal" },
+    { path: "../fonts/NeueHaasDisplayRoman.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/NeueHaasDisplayMedium.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/NeueHaasDisplayBold.woff2", weight: "700", style: "normal" },
   ],
 });
