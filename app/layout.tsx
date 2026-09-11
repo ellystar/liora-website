@@ -26,6 +26,7 @@ export const metadata: Metadata = {
   verification: {
     other: {
       "facebook-domain-verification": "7elvzcjmk5igmhkr0pd1u28tqhautl",
+      "p:domain_verify": "3dcc104bd12f76b4a5eb5fb87c673d57",
     },
   },
   openGraph: {
