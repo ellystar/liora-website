@@ -3,15 +3,46 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Cta from "./Cta";
+import { type Lang, mailto } from "@/lib/i18n";
 
-const LINKS = [
-  { label: "What we build", href: "#build" },
-  { label: "Work", href: "#work" },
-  { label: "Atelier", href: "#horizon" },
-  { label: "About", href: "#built-by" },
-];
+const COPY = {
+  en: {
+    links: [
+      { label: "What we build", href: "#build" },
+      { label: "Work", href: "#work" },
+      { label: "Atelier", href: "#horizon" },
+      { label: "About", href: "#built-by" },
+    ],
+    cta: "Get in touch",
+    primary: "Primary",
+    open: "Open menu",
+    close: "Close menu",
+    tagline: "Liora · An AI-native creative systems lab",
+    switchLabel: "Türkçe",
+  },
+  tr: {
+    links: [
+      { label: "Ne kuruyoruz", href: "#build" },
+      { label: "İşler", href: "#work" },
+      { label: "Atelier", href: "#horizon" },
+      { label: "Hakkımızda", href: "#built-by" },
+    ],
+    cta: "İletişime geçin",
+    primary: "Ana menü",
+    open: "Menüyü aç",
+    close: "Menüyü kapat",
+    tagline: "Liora · Yapay zekâ temelli bir yaratıcı sistemler laboratuvarı",
+    switchLabel: "English",
+  },
+};
 
-export default function Nav() {
+// The other language's home — both homes share the same section anchors.
+const OTHER = { en: { href: "/tr", code: "TR" }, tr: { href: "/", code: "EN" } };
+
+export default function Nav({ lang = "en" }: { lang?: Lang }) {
+  const t = COPY[lang];
+  const LINKS = t.links;
+  const other = OTHER[lang];
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -40,7 +71,7 @@ export default function Nav() {
 
   // Quiet scrollspy — the active section carries a gold underline.
   useEffect(() => {
-    const ids = LINKS.map((l) => l.href.slice(1));
+    const ids = COPY.en.links.map((l) => l.href.slice(1)); // anchors are shared by both languages
     const sections = ids
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => !!el);
@@ -80,7 +111,7 @@ export default function Nav() {
           className={`wrap flex items-center justify-between transition-[padding] duration-[400ms] ease-liora ${
             scrolled || open ? "py-[15px]" : "py-6"
           }`}
-          aria-label="Primary"
+          aria-label={t.primary}
         >
           <Link
             href="#top"
@@ -111,12 +142,21 @@ export default function Nav() {
                 </li>
               ))}
             </ul>
+            {/* Language switch — quiet, mono, beside the CTA */}
+            <Link
+              href={other.href}
+              hrefLang={other.code.toLowerCase()}
+              aria-label={t.switchLabel}
+              className="font-mono text-[11px] tracking-[0.14em] text-ink/60 transition-colors duration-300 ease-liora hover:text-ink"
+            >
+              {other.code}
+            </Link>
             {/* Quiet nav CTA — the soft sibling of the hero's loud primary */}
             <Link
-              href="mailto:info@lioralabs.io?subject=Working%20with%20Liora"
+              href={mailto(lang)}
               className="group/cta inline-flex items-center gap-2 rounded-[2px] border border-ink bg-transparent px-4 py-2 font-ui text-[13px] font-medium leading-none text-ink transition-colors duration-300 ease-liora hover:border-oxblood hover:bg-oxblood hover:text-white focus-visible:outline-2"
             >
-              Get in touch
+              {t.cta}
               <span
                 aria-hidden="true"
                 className="transition-transform duration-300 ease-liora group-hover/cta:translate-x-1"
@@ -131,7 +171,7 @@ export default function Nav() {
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="relative z-50 flex h-10 w-10 flex-col items-center justify-center gap-[5px] min-[960px]:hidden"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? t.close : t.open}
             aria-expanded={open}
           >
             <span
@@ -170,13 +210,19 @@ export default function Nav() {
           ))}
         </ul>
         <div className="mt-10">
-          <Cta href="mailto:info@lioralabs.io?subject=Working%20with%20Liora" variant="primary" className="w-full justify-between">
-            <span onClick={() => setOpen(false)}>Get in touch</span>
+          <Cta href={mailto(lang)} variant="primary" className="w-full justify-between">
+            <span onClick={() => setOpen(false)}>{t.cta}</span>
           </Cta>
         </div>
-        <p className="meta mt-auto pb-10 pt-12">
-          Liora · An AI-native creative systems lab
-        </p>
+        <Link
+          href={other.href}
+          hrefLang={other.code.toLowerCase()}
+          onClick={() => setOpen(false)}
+          className="meta mt-8 w-fit text-ink"
+        >
+          {t.switchLabel}
+        </Link>
+        <p className="meta mt-auto pb-10 pt-12">{t.tagline}</p>
       </div>
     </>
   );

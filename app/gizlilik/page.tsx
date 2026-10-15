@@ -110,6 +110,7 @@ export default function GizlilikPage() {
       kicker="Yasal"
       updatedLabel="Son güncelleme"
       backLabel="Ana sayfaya dön"
+      lang="tr"
     >
       <ReactMarkdown>{content}</ReactMarkdown>
     </LegalLayout>

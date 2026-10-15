@@ -1,12 +1,51 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Lang } from "@/lib/i18n";
 
 type Errors = { name?: string; email?: string; message?: string };
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-export default function ContactForm() {
+const COPY = {
+  en: {
+    errName: "Tell us who you are.",
+    errEmail: "We need a way to reply.",
+    errEmailBad: "That email looks incomplete.",
+    errMessage: "A line or two is plenty.",
+    sentTitle: "Thank you — the conversation is open.",
+    sentBody: "We’ve received your note and will be in touch soon. If it’s urgent, write to us directly at",
+    name: "Name",
+    namePh: "Your name",
+    email: "Brand & email",
+    emailPh: "you@studio.com",
+    message: "What are you scaling?",
+    messagePh: "A campaign, a launch, a whole visual system…",
+    sending: "Sending…",
+    send: "Start the conversation",
+    error: "Something went wrong on our side. Please write to us directly at",
+  },
+  tr: {
+    errName: "Bize kim olduğunuzu söyleyin.",
+    errEmail: "Size dönebilmemiz için bir e-posta gerekli.",
+    errEmailBad: "Bu e-posta adresi eksik görünüyor.",
+    errMessage: "Bir iki cümle yeterli.",
+    sentTitle: "Teşekkürler, sohbet başladı.",
+    sentBody: "Notunuz bize ulaştı, en kısa sürede dönüş yapacağız. Acilse doğrudan şu adrese yazabilirsiniz:",
+    name: "Ad soyad",
+    namePh: "Adınız",
+    email: "Marka ve e-posta",
+    emailPh: "ad@markaniz.com",
+    message: "Neyi büyütüyorsunuz?",
+    messagePh: "Bir kampanya, bir lansman, bütün bir görsel sistem…",
+    sending: "Gönderiliyor…",
+    send: "Sohbeti başlatın",
+    error: "Bizim tarafımızda bir sorun oluştu. Lütfen doğrudan şu adrese yazın:",
+  },
+};
+
+export default function ContactForm({ lang = "en" }: { lang?: Lang }) {
+  const t = COPY[lang];
   const [values, setValues] = useState({ name: "", email: "", message: "" });
   const [company, setCompany] = useState(""); // honeypot — stays empty for humans
   const [errors, setErrors] = useState<Errors>({});
@@ -33,11 +72,11 @@ export default function ContactForm() {
 
   const validate = (): Errors => {
     const e: Errors = {};
-    if (!values.name.trim()) e.name = "Tell us who you are.";
-    if (!values.email.trim()) e.email = "We need a way to reply.";
+    if (!values.name.trim()) e.name = t.errName;
+    if (!values.email.trim()) e.email = t.errEmail;
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim()))
-      e.email = "That email looks incomplete.";
-    if (!values.message.trim()) e.message = "A line or two is plenty.";
+      e.email = t.errEmailBad;
+    if (!values.message.trim()) e.message = t.errMessage;
     return e;
   };
 
@@ -72,10 +111,9 @@ export default function ContactForm() {
         role="status"
         aria-live="polite"
       >
-        <p className="d3 text-on-dark">Thank you — the conversation is open.</p>
+        <p className="d3 text-on-dark">{t.sentTitle}</p>
         <p className="body mt-3 !text-on-dark-mut">
-          We&apos;ve received your note and will be in touch soon. If it&apos;s
-          urgent, write to us directly at{" "}
+          {t.sentBody}{" "}
           <a href="mailto:info@lioralabs.io" className="link-inline">
             info@lioralabs.io
           </a>
@@ -88,7 +126,7 @@ export default function ContactForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="grid max-w-md gap-5">
       <Field
-        label="Name"
+        label={t.name}
         required
         error={errors.name}
         htmlFor="name"
@@ -103,12 +141,12 @@ export default function ContactForm() {
           onChange={set("name")}
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? "name-err" : undefined}
-          placeholder="Your name"
+          placeholder={t.namePh}
           className="input"
         />
       </Field>
 
-      <Field label="Brand & email" required error={errors.email} htmlFor="email">
+      <Field label={t.email} required error={errors.email} htmlFor="email">
         <input
           ref={refs.email}
           id="email"
@@ -120,13 +158,13 @@ export default function ContactForm() {
           onChange={set("email")}
           aria-invalid={!!errors.email}
           aria-describedby={errors.email ? "email-err" : undefined}
-          placeholder="you@studio.com"
+          placeholder={t.emailPh}
           className="input"
         />
       </Field>
 
       <Field
-        label="What are you scaling?"
+        label={t.message}
         required
         error={errors.message}
         htmlFor="message"
@@ -140,7 +178,7 @@ export default function ContactForm() {
           onChange={set("message")}
           aria-invalid={!!errors.message}
           aria-describedby={errors.message ? "message-err" : undefined}
-          placeholder="A campaign, a launch, a whole visual system…"
+          placeholder={t.messagePh}
           className="input resize-y"
         />
       </Field>
@@ -171,7 +209,7 @@ export default function ContactForm() {
             status === "sending" ? "cursor-not-allowed opacity-60" : ""
           }`}
         >
-          <span>{status === "sending" ? "Sending…" : "Start the conversation"}</span>
+          <span>{status === "sending" ? t.sending : t.send}</span>
           <span aria-hidden="true" className="transition-transform duration-300 ease-liora group-hover/cta:translate-x-1">
             →
           </span>
@@ -180,7 +218,7 @@ export default function ContactForm() {
 
       {status === "error" && (
         <p role="alert" className="text-[12.5px] text-[var(--oxblood-on-dark)]">
-          Something went wrong on our side. Please write to us directly at{" "}
+          {t.error}{" "}
           <a href="mailto:info@lioralabs.io" className="link-inline">
             info@lioralabs.io
           </a>

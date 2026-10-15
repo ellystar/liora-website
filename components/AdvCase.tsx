@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { type Lang, counterpart, localize, mailto } from "@/lib/i18n";
 
 type Model = {
   name: string;
@@ -11,28 +12,54 @@ type Model = {
   img: string | null;
 };
 
-const CAST: Model[] = [
-  { name: "Noa Kim", ethnicity: "East Asian", age: "26", city: "Seoul", img: "/noa.jpg" },
-  { name: "Jonas Visser", ethnicity: "Dutch", age: "31", city: "Amsterdam", img: "/jonas.jpg" },
-];
+const CAST: Record<Lang, Model[]> = {
+  en: [
+    { name: "Noa Kim", ethnicity: "East Asian", age: "26", city: "Seoul", img: "/noa.jpg" },
+    { name: "Jonas Visser", ethnicity: "Dutch", age: "31", city: "Amsterdam", img: "/jonas.jpg" },
+  ],
+  tr: [
+    { name: "Noa Kim", ethnicity: "Doğu Asyalı", age: "26", city: "Seul", img: "/noa.jpg" },
+    { name: "Jonas Visser", ethnicity: "Hollandalı", age: "31", city: "Amsterdam", img: "/jonas.jpg" },
+  ],
+};
 
 // Layer 02 · The Visual Language — interactive "set memory" studio.
-const STUDIO = [
-  { key: "Framing", x: 13, y: 20, tip: "Breathing space, negative space, editorial composition." },
-  { key: "Background", x: 42, y: 25, tip: "Warm limestone plaster. Minimal architectural texture." },
-  { key: "Light", x: 84, y: 27, tip: "Natural afternoon light. Soft directional shadows. No artificial highlights." },
-  { key: "Depth", x: 27, y: 48, tip: "Layered planes, and a soft receding back corner." },
-  { key: "Contrast", x: 52, y: 54, tip: "Low, even contrast — no hard edges, nothing harsh." },
-  { key: "Palette", x: 22, y: 83, tip: "Stone. Sand. Cream. Muted navy." },
-  { key: "Mood", x: 60, y: 80, tip: "Quiet luxury. Mediterranean summer. Effortless elegance." },
-];
+type Spot = { key: string; x: number; y: number; tip: string };
+const STUDIO: Record<Lang, Spot[]> = {
+  en: [
+    { key: "Framing", x: 13, y: 20, tip: "Breathing space, negative space, editorial composition." },
+    { key: "Background", x: 42, y: 25, tip: "Warm limestone plaster. Minimal architectural texture." },
+    { key: "Light", x: 84, y: 27, tip: "Natural afternoon light. Soft directional shadows. No artificial highlights." },
+    { key: "Depth", x: 27, y: 48, tip: "Layered planes, and a soft receding back corner." },
+    { key: "Contrast", x: 52, y: 54, tip: "Low, even contrast — no hard edges, nothing harsh." },
+    { key: "Palette", x: 22, y: 83, tip: "Stone. Sand. Cream. Muted navy." },
+    { key: "Mood", x: 60, y: 80, tip: "Quiet luxury. Mediterranean summer. Effortless elegance." },
+  ],
+  tr: [
+    { key: "Kadraj", x: 13, y: 20, tip: "Nefes alan boşluklar, negatif alan, editoryal kompozisyon." },
+    { key: "Fon", x: 42, y: 25, tip: "Sıcak kireçtaşı sıva. Yalın, mimari bir doku." },
+    { key: "Işık", x: 84, y: 27, tip: "Doğal öğleden sonra ışığı. Yumuşak, yönlü gölgeler. Yapay parlama yok." },
+    { key: "Derinlik", x: 27, y: 48, tip: "Katmanlı düzlemler ve geriye doğru yumuşakça açılan bir köşe." },
+    { key: "Kontrast", x: 52, y: 54, tip: "Düşük, dengeli kontrast; sert kenar yok, hiçbir şey keskin değil." },
+    { key: "Palet", x: 22, y: 83, tip: "Taş. Kum. Krem. Kırık lacivert." },
+    { key: "Atmosfer", x: 60, y: 80, tip: "Sessiz lüks. Akdeniz yazı. Zahmetsiz zarafet." },
+  ],
+};
 
 // Layer 03 · Styling Logic — real styling frames (a sample of 250).
-const STYLING = [
-  { no: "01", img: "/style-01.jpg", cat: "Womenswear — Shirt", note: "Casual" },
-  { no: "02", img: "/style-02.jpg", cat: "Womenswear — Dress", note: "Evening" },
-  { no: "03", img: "/style-03.jpg", cat: "Menswear — Linen", note: "Resort" },
-];
+const STYLING_IMG = ["/style-01.jpg", "/style-02.jpg", "/style-03.jpg"];
+const STYLING: Record<Lang, { cat: string; note: string }[]> = {
+  en: [
+    { cat: "Womenswear — Shirt", note: "Casual" },
+    { cat: "Womenswear — Dress", note: "Evening" },
+    { cat: "Menswear — Linen", note: "Resort" },
+  ],
+  tr: [
+    { cat: "Kadın — Gömlek", note: "Günlük" },
+    { cat: "Kadın — Elbise", note: "Akşam" },
+    { cat: "Erkek — Keten", note: "Tatil" },
+  ],
+};
 
 // The output — a full-bleed wall of the best launch-ready frames.
 const GALLERY = [
@@ -51,68 +78,305 @@ const GALLERY = [
 // and cut. Same three beats — Establish, Detail, Motion — resolved per category.
 type OrchSet = { set: string; beat: string; pose: string };
 type OrchCat = { key: string; code: string; label: string; sets: OrchSet[] };
-const ORCH: { gender: string; cats: OrchCat[] }[] = [
-  {
-    gender: "Womenswear",
-    cats: [
-      {
-        key: "w-tops",
-        code: "W·TOP",
-        label: "Tops",
-        sets: [
-          { set: "A", beat: "Establish", pose: "¾ front · torso lead · hands soft" },
-          { set: "B", beat: "Detail", pose: "Profile · collar, cuff & seam" },
-          { set: "C", beat: "Motion", pose: "Quarter-turn · sleeve in motion" },
-        ],
-      },
-      {
-        key: "w-bottoms",
-        code: "W·BTM",
-        label: "Bottoms",
-        sets: [
-          { set: "A", beat: "Establish", pose: "Full-length · weight on one hip" },
-          { set: "B", beat: "Detail", pose: "¾ back · waistband & pocket" },
-          { set: "C", beat: "Motion", pose: "Walk-through · hem released" },
-        ],
-      },
-      {
-        key: "w-dresses",
-        code: "W·DRS",
-        label: "Dresses",
-        sets: [
-          { set: "A", beat: "Establish", pose: "Full-length front · centred" },
-          { set: "B", beat: "Detail", pose: "¾ turn · fabric fall & drape" },
-          { set: "C", beat: "Motion", pose: "Sweep · skirt in movement" },
-        ],
-      },
+const ORCH: Record<Lang, { gender: string; cats: OrchCat[] }[]> = {
+  en: [
+    {
+      gender: "Womenswear",
+      cats: [
+        {
+          key: "w-tops",
+          code: "W·TOP",
+          label: "Tops",
+          sets: [
+            { set: "A", beat: "Establish", pose: "¾ front · torso lead · hands soft" },
+            { set: "B", beat: "Detail", pose: "Profile · collar, cuff & seam" },
+            { set: "C", beat: "Motion", pose: "Quarter-turn · sleeve in motion" },
+          ],
+        },
+        {
+          key: "w-bottoms",
+          code: "W·BTM",
+          label: "Bottoms",
+          sets: [
+            { set: "A", beat: "Establish", pose: "Full-length · weight on one hip" },
+            { set: "B", beat: "Detail", pose: "¾ back · waistband & pocket" },
+            { set: "C", beat: "Motion", pose: "Walk-through · hem released" },
+          ],
+        },
+        {
+          key: "w-dresses",
+          code: "W·DRS",
+          label: "Dresses",
+          sets: [
+            { set: "A", beat: "Establish", pose: "Full-length front · centred" },
+            { set: "B", beat: "Detail", pose: "¾ turn · fabric fall & drape" },
+            { set: "C", beat: "Motion", pose: "Sweep · skirt in movement" },
+          ],
+        },
+      ],
+    },
+    {
+      gender: "Menswear",
+      cats: [
+        {
+          key: "m-upper",
+          code: "M·UPR",
+          label: "Upper",
+          sets: [
+            { set: "A", beat: "Establish", pose: "¾ front · shoulders square" },
+            { set: "B", beat: "Detail", pose: "Profile · lapel, placket & cuff" },
+            { set: "C", beat: "Motion", pose: "Turn · fabric catches the light" },
+          ],
+        },
+        {
+          key: "m-lower",
+          code: "M·LWR",
+          label: "Lower",
+          sets: [
+            { set: "A", beat: "Establish", pose: "Full-length · stance open" },
+            { set: "B", beat: "Detail", pose: "¾ back · seat & break" },
+            { set: "C", beat: "Motion", pose: "Step · crease in motion" },
+          ],
+        },
+      ],
+    },
+  ],
+  tr: [
+    {
+      gender: "Kadın giyim",
+      cats: [
+        {
+          key: "w-tops",
+          code: "K·ÜST",
+          label: "Üst",
+          sets: [
+            { set: "A", beat: "Giriş", pose: "¾ önden · gövde önde · eller yumuşak" },
+            { set: "B", beat: "Detay", pose: "Profil · yaka, manşet ve dikiş" },
+            { set: "C", beat: "Hareket", pose: "Çeyrek dönüş · kol hareket hâlinde" },
+          ],
+        },
+        {
+          key: "w-bottoms",
+          code: "K·ALT",
+          label: "Alt",
+          sets: [
+            { set: "A", beat: "Giriş", pose: "Boydan · ağırlık tek kalçada" },
+            { set: "B", beat: "Detay", pose: "¾ arkadan · bel ve cep" },
+            { set: "C", beat: "Hareket", pose: "Yürürken · paça serbest" },
+          ],
+        },
+        {
+          key: "w-dresses",
+          code: "K·ELB",
+          label: "Elbise",
+          sets: [
+            { set: "A", beat: "Giriş", pose: "Boydan önden · ortalı" },
+            { set: "B", beat: "Detay", pose: "¾ dönüş · kumaşın düşüşü" },
+            { set: "C", beat: "Hareket", pose: "Savrulma · etek hareket hâlinde" },
+          ],
+        },
+      ],
+    },
+    {
+      gender: "Erkek giyim",
+      cats: [
+        {
+          key: "m-upper",
+          code: "E·ÜST",
+          label: "Üst",
+          sets: [
+            { set: "A", beat: "Giriş", pose: "¾ önden · omuzlar düz" },
+            { set: "B", beat: "Detay", pose: "Profil · yaka, pat ve manşet" },
+            { set: "C", beat: "Hareket", pose: "Dönüş · kumaş ışığı yakalıyor" },
+          ],
+        },
+        {
+          key: "m-lower",
+          code: "E·ALT",
+          label: "Alt",
+          sets: [
+            { set: "A", beat: "Giriş", pose: "Boydan · açık duruş" },
+            { set: "B", beat: "Detay", pose: "¾ arkadan · arka ve paça kırımı" },
+            { set: "C", beat: "Hareket", pose: "Adım · ütü çizgisi hareket hâlinde" },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const COPY = {
+  en: {
+    back: "← Work",
+    switchCode: "TR",
+    switchLabel: "Türkçe",
+    heroAlt: "ADV — Noa and Jonas, the brand's two signature models",
+    title: { pre: "Launching a brand in ", em: "72 hours." },
+    quiet: "250 products. Three days. One entirely new brand.",
+    client: "Client",
+    service: "Service",
+    serviceName: "Custom Visual System",
+    scroll: "Scroll",
+    problemKick: "01 · The problem",
+    staccato: ["250 products.", "72 hours.", "No photoshoot."],
+    brief1: "ADV was preparing to launch a new fashion brand under Orka Holding. 250 products had to go live within days, not months.",
+    brief2: "There was no photoshoot, no models, and no production pipeline. The only inputs were raw phone photos of the garments — front.",
+    rawAlt: "Raw product input — a single ADV garment, shot front-on on a phone",
+    rawLabel: "Raw product input 01",
+    rawSub: "Phone photo · Front only · Unretouched",
+    shiftKick: "02 · The shift",
+    shift: { pre: "What normally takes weeks. Done in ", em: "days", post: "." },
+    cmpL: "Traditional Approach",
+    cmpR: "Liora — visual launch system",
+    cmpLShort: "Traditional",
+    rows: {
+      perDay: "~70 products / day",
+      products: "250 products",
+      hours: "72 hours",
+      oneModel: "One booked model",
+      twoModels: "Two signature models —",
+      names: "Noa & Jonas",
+      weeks: "Weeks of preparation",
+      reusable: "One reusable visual system",
+      logistics: "Models, sets & logistics",
+      workflow: "An AI-native production workflow",
+    },
+    cmpFoot: "Same catalogue. A different order of time.",
+    systemKick: "03 · The system",
+    spine: { pre: "We designed a visual system that could ", em: "keep producing itself.", post: "" },
+    systemLead: "Four interconnected layers turned raw product photos into launch-ready imagery — and made the next collection faster than the first.",
+    layer: "Layer",
+    castName: "The Cast",
+    castLine: "Two signature models, designed for the brand — Noa and Jonas, built for consistency across hundreds of images, collections and campaigns.",
+    castAlt: "signature model for the ADV launch",
+    portraitPh: "Portrait · placeholder",
+    vlName: "The Visual Language",
+    vlLine: "A set of rules for light, composition and atmosphere — so every image belongs to the same world.",
+    studioPh: "The ADV world — the set, between shots",
+    tap: "Tap a label to explore",
+    stylingName: "Styling Logic",
+    stylingLine: "Each garment, styled on its own terms — because a brand doesn’t sell clothes, it sells taste.",
+    stylingKick: "Sample styling categories",
+    stylingCount: "3 of 250",
+    stylingAlt: "styling for one ADV garment",
+    stylingFoot: "Every one of 250 products was styled on its own — one system, endlessly repeatable.",
+    orchName: "Visual Orchestration",
+    orchLine: "Every product resolves to three frames. The pose set isn’t chosen by hand — it’s decided by gender and cut, the same way, every time.",
+    orchOut: "→ 3 frames / product",
+    orchAria: "category to frames to pose sets",
+    orchHeads: ["CATEGORY", "FRAME", "POSE SET"],
+    frame: "FRAME",
+    orchFoot: "Six paths, one grammar — the same three beats, multiplied across 250 products.",
+    outputKick: "04 · The output",
+    outputH2: "The output, at scale.",
+    outputLead: "Hundreds of launch-ready images, generated from a repeatable visual system — not one campaign, but a production engine.",
+    outputAlt: "ADV — launch-ready output",
+    outputCap: "Selected launch frames · one repeatable system",
+    outcomeKick: "05 · Outcome",
+    outcomeH2: "The result, in numbers.",
+    metrics: [
+      ["250", "Products"],
+      ["72h", "Start to delivery"],
+      ["2", "Signature models"],
+      ["3", "Frames per product"],
+      ["~750", "Final images"],
+      // NOTE: confirm the real, defensible figure before publishing.
+      ["~70%", "Lower production cost"],
     ],
+    knockout: { pre: "Launched on time — ", em: "without a single photoshoot." },
+    afterKick: "06 · And after",
+    afterH2: "The launch wasn’t a one-off. It became a system the brand keeps building on.",
+    afterLead: "The cast, the visual language and the orchestration remain — ready for the next collection, the next drop, the next season. Not a batch of images, but visual infrastructure the brand now owns.",
+    cta: "Get in touch →",
+    next: "Next work →",
+    footer: "An AI-native creative systems lab",
   },
-  {
-    gender: "Menswear",
-    cats: [
-      {
-        key: "m-upper",
-        code: "M·UPR",
-        label: "Upper",
-        sets: [
-          { set: "A", beat: "Establish", pose: "¾ front · shoulders square" },
-          { set: "B", beat: "Detail", pose: "Profile · lapel, placket & cuff" },
-          { set: "C", beat: "Motion", pose: "Turn · fabric catches the light" },
-        ],
-      },
-      {
-        key: "m-lower",
-        code: "M·LWR",
-        label: "Lower",
-        sets: [
-          { set: "A", beat: "Establish", pose: "Full-length · stance open" },
-          { set: "B", beat: "Detail", pose: "¾ back · seat & break" },
-          { set: "C", beat: "Motion", pose: "Step · crease in motion" },
-        ],
-      },
+  tr: {
+    back: "← İşler",
+    switchCode: "EN",
+    switchLabel: "English",
+    heroAlt: "ADV — markanın iki imza mankeni Noa ve Jonas",
+    title: { pre: "Bir marka, ", em: "72 saatte." },
+    quiet: "250 ürün. Üç gün. Sıfırdan, yepyeni bir marka.",
+    client: "Müşteri",
+    service: "Hizmet",
+    serviceName: "Özel Görsel Sistem",
+    scroll: "Kaydır",
+    problemKick: "01 · Sorun",
+    staccato: ["250 ürün.", "72 saat.", "Çekim yok."],
+    brief1: "ADV, Orka Holding bünyesinde yeni bir moda markasının lansmanına hazırlanıyordu. 250 ürünün aylar içinde değil, günler içinde yayına girmesi gerekiyordu.",
+    brief2: "Ne bir çekim vardı ne manken ne de kurulu bir üretim düzeni. Elimizdeki tek girdi, ürünlerin önden çekilmiş ham telefon fotoğraflarıydı.",
+    rawAlt: "Ham ürün girdisi — tek bir ADV parçası, telefonla önden çekilmiş",
+    rawLabel: "Ham ürün girdisi 01",
+    rawSub: "Telefon fotoğrafı · Yalnızca önden · Rötuşsuz",
+    shiftKick: "02 · Dönüşüm",
+    shift: { pre: "Normalde haftalar süren iş. ", em: "Günler", post: " içinde." },
+    cmpL: "Geleneksel yöntem",
+    cmpR: "Liora — görsel lansman sistemi",
+    cmpLShort: "Geleneksel",
+    rows: {
+      perDay: "Günde ~70 ürün",
+      products: "250 ürün",
+      hours: "72 saat",
+      oneModel: "Rezerve edilmiş tek bir manken",
+      twoModels: "İki imza manken —",
+      names: "Noa ve Jonas",
+      weeks: "Haftalarca hazırlık",
+      reusable: "Tekrar kullanılabilen tek bir görsel sistem",
+      logistics: "Mankenler, setler ve lojistik",
+      workflow: "Yapay zekâ temelli bir üretim akışı",
+    },
+    cmpFoot: "Aynı katalog. Bambaşka bir zaman ölçeği.",
+    systemKick: "03 · Sistem",
+    spine: { pre: "Kendi kendini ", em: "üretmeye devam eden", post: " bir görsel sistem tasarladık." },
+    systemLead: "Birbirine bağlı dört katman, ham ürün fotoğraflarını yayına hazır görsellere dönüştürdü ve bir sonraki koleksiyonu ilkinden daha hızlı hale getirdi.",
+    layer: "Katman",
+    castName: "Kadro",
+    castLine: "Markaya özel tasarlanmış iki imza manken: yüzlerce görselde, koleksiyonda ve kampanyada tutarlı kalmaları için kurulan Noa ve Jonas.",
+    castAlt: "ADV lansmanının imza mankeni",
+    portraitPh: "Portre · yer tutucu",
+    vlName: "Görsel Dil",
+    vlLine: "Işık, kompozisyon ve atmosfer için bir kurallar bütünü; böylece her görsel aynı dünyaya ait.",
+    studioPh: "ADV dünyası — çekimler arasında set",
+    tap: "Keşfetmek için bir etikete dokunun",
+    stylingName: "Styling Mantığı",
+    stylingLine: "Her parça kendi koşullarında giydirildi; çünkü bir marka kıyafet değil, zevk satar.",
+    stylingKick: "Örnek styling kategorileri",
+    stylingCount: "250'den 3'ü",
+    stylingAlt: "bir ADV parçasının styling'i",
+    stylingFoot: "250 ürünün her biri ayrı ayrı giydirildi; tek bir sistem, sonsuz kez tekrarlanabilir.",
+    orchName: "Görsel Orkestrasyon",
+    orchLine: "Her ürün üç kareye dönüşür. Poz seti elle seçilmez; cinsiyete ve kesime göre, her seferinde aynı şekilde belirlenir.",
+    orchOut: "→ ürün başına 3 kare",
+    orchAria: "kategoriden karelere, karelerden poz setlerine",
+    orchHeads: ["KATEGORİ", "KARE", "POZ SETİ"],
+    frame: "KARE",
+    orchFoot: "Altı yol, tek bir dil bilgisi: aynı üç vuruş, 250 ürün boyunca.",
+    outputKick: "04 · Çıktı",
+    outputH2: "Ölçeğiyle çıktı.",
+    outputLead: "Tekrarlanabilir bir görsel sistemden çıkan yüzlerce yayına hazır görsel: tek bir kampanya değil, üretmeye devam eden bir yapı.",
+    outputAlt: "ADV — yayına hazır görsel",
+    outputCap: "Seçilmiş lansman kareleri · tekrarlanabilir tek bir sistem",
+    outcomeKick: "05 · Sonuç",
+    outcomeH2: "Rakamlarla sonuç.",
+    metrics: [
+      ["250", "Ürün"],
+      ["72 sa", "Başlangıçtan teslimata"],
+      ["2", "İmza manken"],
+      ["3", "Ürün başına kare"],
+      ["~750", "Final görsel"],
+      // NOTE: confirm the real, defensible figure before publishing.
+      ["~%70", "Daha düşük üretim maliyeti"],
     ],
+    knockout: { pre: "Zamanında yayında — ", em: "tek bir çekim yapmadan." },
+    afterKick: "06 · Sonrası",
+    afterH2: "Lansman tek seferlik değildi. Markanın üzerine kurmaya devam ettiği bir sisteme dönüştü.",
+    afterLead: "Kadro, görsel dil ve orkestrasyon yerinde duruyor; bir sonraki koleksiyon, bir sonraki drop, bir sonraki sezon için hazır. Bir yığın görsel değil, artık markanın sahip olduğu bir görsel altyapı.",
+    cta: "İletişime geçin →",
+    next: "Sonraki iş →",
+    footer: "Yapay zekâ temelli bir yaratıcı sistemler laboratuvarı",
   },
-];
+};
 
 /**
  * ADV / Orka Holding case study — "Launching a brand in 72 hours."
@@ -150,10 +414,13 @@ const elbow = (x1: number, y1: number, x2: number, y2: number) => {
   return `M ${x1} ${y1} H ${mx} V ${y2} H ${x2}`;
 };
 
-export default function AdvCase() {
+export default function AdvCase({ lang = "en" }: { lang?: Lang }) {
+  const t = COPY[lang];
+  const upper = (s: string) => s.toLocaleUpperCase(lang);
+  const studio = STUDIO[lang];
   const root = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<string | null>(null);
-  const act = STUDIO.find((s) => s.key === active);
+  const act = studio.find((s) => s.key === active);
 
   // Layer 04 — both genders shown, stacked. Hovering a category traces its
   // branch; at rest everything sits at a quiet, even weight.
@@ -185,12 +452,22 @@ export default function AdvCase() {
   return (
     <div className="advcase" ref={root}>
       <nav className="nav">
-        <a className="wm" href="/" aria-label="Liora — home">
+        <a className="wm" href={localize(lang, "/")} aria-label="Liora — home">
           LIORA
         </a>
-        <a className="back" href="/#work">
-          ← Work
-        </a>
+        <span style={{ display: "flex", alignItems: "center", gap: 22 }}>
+          <a
+            className="back"
+            href={counterpart(lang, "/work/adv")}
+            hrefLang={t.switchCode.toLowerCase()}
+            aria-label={t.switchLabel}
+          >
+            {t.switchCode}
+          </a>
+          <a className="back" href={localize(lang, "/#work")}>
+            {t.back}
+          </a>
+        </span>
       </nav>
 
       {/* 1 · HERO */}
@@ -198,7 +475,7 @@ export default function AdvCase() {
         <div className="media">
           <Image
             src="/adv-hero.jpg"
-            alt="ADV — Noa and Jonas, the brand's two signature models"
+            alt={t.heroAlt}
             fill
             priority
             sizes="100vw"
@@ -209,22 +486,23 @@ export default function AdvCase() {
         <div className="content">
           <div className="hkick">2026</div>
           <h1 className="ctitle">
-            Launching a brand in <em>72 hours.</em>
+            {t.title.pre}
+            <em>{t.title.em}</em>
           </h1>
-          <p className="cquiet">250 products. Three days. One entirely new brand.</p>
+          <p className="cquiet">{t.quiet}</p>
           <div className="hmeta">
             <div className="it">
-              <span>Client</span> &nbsp;ADV, Orka Holding
+              <span>{t.client}</span> &nbsp;ADV, Orka Holding
             </div>
             <div className="sep" />
             <div className="it">
-              <span>Service</span> &nbsp;Custom Visual System
+              <span>{t.service}</span> &nbsp;{t.serviceName}
             </div>
           </div>
         </div>
         <div className="scrollcue">
           <span className="ln" />
-          Scroll
+          {t.scroll}
         </div>
       </section>
 
@@ -233,26 +511,20 @@ export default function AdvCase() {
         <div className="wrap">
           <div className="brief-grid">
             <div>
-              <div className="kick reveal">01 · The problem</div>
+              <div className="kick reveal">{t.problemKick}</div>
               <div className="staccato reveal">
-                <span>250 products.</span>
-                <span>72 hours.</span>
-                <span>No photoshoot.</span>
+                {t.staccato.map((s) => (
+                  <span key={s}>{s}</span>
+                ))}
               </div>
-              <p className="brief-note reveal">
-                ADV was preparing to launch a new fashion brand under Orka
-                Holding. 250 products had to go live within days, not months.
-              </p>
-              <p className="brief-note reveal">
-                There was no photoshoot, no models, and no production pipeline.
-                The only inputs were raw phone photos of the garments — front.
-              </p>
+              <p className="brief-note reveal">{t.brief1}</p>
+              <p className="brief-note reveal">{t.brief2}</p>
             </div>
             <figure className="rawshot reveal">
               <div className="rawshot-img">
                 <Image
                   src="/flat-01.jpg"
-                  alt="Raw product input — a single ADV garment, shot front-on on a phone"
+                  alt={t.rawAlt}
                   fill
                   sizes="(max-width: 900px) 92vw, 600px"
                   style={{
@@ -264,10 +536,8 @@ export default function AdvCase() {
                 <div className="rawshot-veil" aria-hidden="true" />
               </div>
               <figcaption className="rawshot-cap">
-                <span className="rawshot-label">Raw product input 01</span>
-                <span className="rawshot-sub">
-                  Phone photo · Front only · Unretouched
-                </span>
+                <span className="rawshot-label">{t.rawLabel}</span>
+                <span className="rawshot-sub">{t.rawSub}</span>
               </figcaption>
             </figure>
           </div>
@@ -277,80 +547,75 @@ export default function AdvCase() {
       {/* 3 · THE SHIFT */}
       <section className="sec dark">
         <div className="wrap">
-          <div className="kick reveal">02 · The shift</div>
+          <div className="kick reveal">{t.shiftKick}</div>
           <h2 className="h2 reveal">
-            What normally takes weeks. Done in <em>days</em>.
+            {t.shift.pre}
+            <em>{t.shift.em}</em>
+            {t.shift.post}
           </h2>
           <div className="cmp reveal">
             <div className="cmp-row head">
-              <div className="l">Traditional Approach</div>
-              <div className="r">Liora — visual launch system</div>
+              <div className="l">{t.cmpL}</div>
+              <div className="r">{t.cmpR}</div>
             </div>
             <div className="cmp-row">
-              <div className="l">~70 products / day</div>
-              <div className="r">
-                <b>250 products</b> / <span className="ox">72 hours</span>
+              <div className="l" data-label={t.cmpLShort}>{t.rows.perDay}</div>
+              <div className="r" data-label="Liora">
+                <b>{t.rows.products}</b> / <span className="ox">{t.rows.hours}</span>
               </div>
             </div>
             <div className="cmp-row">
-              <div className="l">One booked model</div>
-              <div className="r">
-                Two signature models — <b>Noa &amp; Jonas</b>
+              <div className="l" data-label={t.cmpLShort}>{t.rows.oneModel}</div>
+              <div className="r" data-label="Liora">
+                {t.rows.twoModels} <b>{t.rows.names}</b>
               </div>
             </div>
             <div className="cmp-row">
-              <div className="l">Weeks of preparation</div>
-              <div className="r">One reusable visual system</div>
+              <div className="l" data-label={t.cmpLShort}>{t.rows.weeks}</div>
+              <div className="r" data-label="Liora">{t.rows.reusable}</div>
             </div>
             <div className="cmp-row">
-              <div className="l">Models, sets &amp; logistics</div>
-              <div className="r">An AI-native production workflow</div>
+              <div className="l" data-label={t.cmpLShort}>{t.rows.logistics}</div>
+              <div className="r" data-label="Liora">{t.rows.workflow}</div>
             </div>
           </div>
-          <p className="cmp-foot reveal">Same catalogue. A different order of time.</p>
+          <p className="cmp-foot reveal">{t.cmpFoot}</p>
         </div>
       </section>
 
       {/* 4 · THE SYSTEM */}
       <section className="sec light">
         <div className="wrap">
-          <div className="kick reveal">03 · The system</div>
+          <div className="kick reveal">{t.systemKick}</div>
           <h2 className="spine h2 reveal">
-            We designed a visual system that could{" "}
-            <em>keep producing itself.</em>
+            {t.spine.pre}
+            <em>{t.spine.em}</em>
+            {t.spine.post}
           </h2>
-          <p className="lead reveal">
-            Four interconnected layers turned raw product photos into
-            launch-ready imagery — and made the next collection faster than the
-            first.
-          </p>
+          <p className="lead reveal">{t.systemLead}</p>
         </div>
       </section>
 
       {/* Layer 01 — Cast (full-bleed chapter; placeholders until real imagery) */}
       <section className="chapter">
         <header className="modhead reveal">
-          <span className="modhead-no">Layer 01</span>
-          <h3 className="modhead-name">The Cast</h3>
-          <p className="modhead-line">
-            Two signature models, designed for the brand — Noa and Jonas, built
-            for consistency across hundreds of images, collections and
-            campaigns.
-          </p>
+          <span className="modhead-no">{t.layer} 01</span>
+          <h3 className="modhead-name">{t.castName}</h3>
+          <p className="modhead-line">{t.castLine}</p>
         </header>
         <div className="castpair">
-          {CAST.map((m) => (
+          {CAST[lang].map((m) => (
             <figure className="castfig reveal" key={m.name}>
               <div className="castfig-img">
                 {m.img ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={m.img}
-                    alt={`${m.name} — signature model for the ADV launch`}
+                    alt={`${m.name} — ${t.castAlt}`}
                     loading="lazy"
                   />
                 ) : (
-                  <span className="castfig-ph">Portrait · placeholder</span>
+                  <span className="castfig-ph">{t.portraitPh}</span>
                 )}
               </div>
               <figcaption className="castfig-cap">
@@ -367,12 +632,9 @@ export default function AdvCase() {
       {/* Layer 02 · The Visual Language — interactive "set memory" studio */}
       <section className="chapter">
         <header className="modhead reveal">
-          <span className="modhead-no">Layer 02</span>
-          <h3 className="modhead-name">The Visual Language</h3>
-          <p className="modhead-line">
-            A set of rules for light, composition and atmosphere — so every
-            image belongs to the same world.
-          </p>
+          <span className="modhead-no">{t.layer} 02</span>
+          <h3 className="modhead-name">{t.vlName}</h3>
+          <p className="modhead-line">{t.vlLine}</p>
         </header>
         <div className="studio reveal">
           <div className="studio-stage" onMouseLeave={() => setActive(null)}>
@@ -393,11 +655,9 @@ export default function AdvCase() {
                   opacity: act ? 1 : 0,
                 }}
               />
-              <span className="studio-ph">
-                The ADV world — the set, between shots
-              </span>
+              <span className="studio-ph">{t.studioPh}</span>
             </div>
-            {STUDIO.map((s) => (
+            {studio.map((s) => (
               <div
                 className="studio-hot"
                 key={s.key}
@@ -425,91 +685,81 @@ export default function AdvCase() {
               </div>
             ))}
           </div>
-          <p className="studio-tap">Tap a label to explore</p>
+          <p className="studio-tap">{t.tap}</p>
         </div>
       </section>
 
       {/* Layer 03 · Styling Logic — real styling frames, a sample of 250 */}
       <section className="chapter">
         <header className="modhead reveal">
-          <span className="modhead-no">Layer 03</span>
-          <h3 className="modhead-name">Styling Logic</h3>
-          <p className="modhead-line">
-            Each garment, styled on its own terms — because a brand doesn&apos;t
-            sell clothes, it sells taste.
-          </p>
+          <span className="modhead-no">{t.layer} 03</span>
+          <h3 className="modhead-name">{t.stylingName}</h3>
+          <p className="modhead-line">{t.stylingLine}</p>
         </header>
         <div className="styling reveal">
           <div className="styling-head">
-            <span className="styling-kick">Sample styling categories</span>
-            <span className="styling-count">3 of 250</span>
+            <span className="styling-kick">{t.stylingKick}</span>
+            <span className="styling-count">{t.stylingCount}</span>
           </div>
           <div className="stylegrid">
-            {STYLING.map((s) => (
-              <figure className="stylefig" key={s.no}>
+            {STYLING[lang].map((s, i) => (
+              <figure className="stylefig" key={s.cat}>
                 <div className="stylefig-img">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={s.img}
-                    alt={`${s.cat} — styling for one ADV garment`}
+                    src={STYLING_IMG[i]}
+                    alt={`${s.cat} — ${t.stylingAlt}`}
                     loading="lazy"
                   />
                 </div>
                 <figcaption className="stylefig-cap">
-                  <span className="stylefig-no">{s.no}</span>
+                  <span className="stylefig-no">{String(i + 1).padStart(2, "0")}</span>
                   <span className="stylefig-cat">{s.cat}</span>
                   <span className="stylefig-note">{s.note}</span>
                 </figcaption>
               </figure>
             ))}
           </div>
-          <p className="styling-foot">
-            Every one of 250 products was styled on its own — one system,
-            endlessly repeatable.
-          </p>
+          <p className="styling-foot">{t.stylingFoot}</p>
         </div>
       </section>
 
       {/* Layer 04 · Visual Orchestration — the pose engine, as a live system */}
       <section className="chapter">
         <header className="modhead reveal">
-          <span className="modhead-no">Layer 04</span>
-          <h3 className="modhead-name">Visual Orchestration</h3>
-          <p className="modhead-line">
-            Every product resolves to three frames. The pose set isn&apos;t
-            chosen by hand — it&apos;s decided by gender and cut, the same way,
-            every time.
-          </p>
+          <span className="modhead-no">{t.layer} 04</span>
+          <h3 className="modhead-name">{t.orchName}</h3>
+          <p className="modhead-line">{t.orchLine}</p>
         </header>
 
         <div className="orch reveal">
-          {ORCH.map((g) => (
+          {ORCH[lang].map((g) => (
             <div className="orx-block" key={g.gender}>
               <div className="orx-glabel">
                 <span>{g.gender}</span>
-                <span className="orx-glabel-out">→ 3 frames / product</span>
+                <span className="orx-glabel-out">{t.orchOut}</span>
               </div>
               <div className="orx-scroll">
                 <svg
                   className="orx-svg"
                   viewBox={`0 0 ${GEO.w} ${geoH(g.cats.length)}`}
                   role="img"
-                  aria-label={`${g.gender} — category to frames to pose sets`}
+                  aria-label={`${g.gender} — ${t.orchAria}`}
                 >
                   {/* column headers */}
                   {[
-                    ["CATEGORY", GEO.catX + GEO.catW / 2],
-                    ["FRAME", GEO.frameX + GEO.frameW / 2],
-                    ["POSE SET", GEO.poseX + GEO.poseW / 2],
-                  ].map(([t, x]) => (
+                    [t.orchHeads[0], GEO.catX + GEO.catW / 2],
+                    [t.orchHeads[1], GEO.frameX + GEO.frameW / 2],
+                    [t.orchHeads[2], GEO.poseX + GEO.poseW / 2],
+                  ].map(([h, x]) => (
                     <text
-                      key={t as string}
+                      key={h as string}
                       className="orx-head"
                       x={x as number}
                       y={26}
                       textAnchor="middle"
                     >
-                      {t}
+                      {h}
                     </text>
                   ))}
 
@@ -577,7 +827,7 @@ export default function AdvCase() {
                             x={GEO.catX + 16}
                             y={catCy(j) - 4}
                           >
-                            {c.label.toUpperCase()}
+                            {upper(c.label)}
                           </text>
                           <text
                             className="orx-cat-code"
@@ -608,7 +858,7 @@ export default function AdvCase() {
                               textAnchor="middle"
                               dominantBaseline="central"
                             >
-                              FRAME 0{k + 1}
+                              {t.frame} 0{k + 1}
                             </text>
                           </g>
                         ))}
@@ -630,7 +880,7 @@ export default function AdvCase() {
                                 y={frameCy(j, k)}
                                 dominantBaseline="central"
                               >
-                                {s.beat.toUpperCase()}
+                                {upper(s.beat)}
                               </text>
                               <text
                                 className="orx-pose-pose"
@@ -652,50 +902,34 @@ export default function AdvCase() {
           ))}
         </div>
 
-        <p className="orch-foot reveal">
-          Six paths, one grammar — the same three beats, multiplied across 250
-          products.
-        </p>
+        <p className="orch-foot reveal">{t.orchFoot}</p>
       </section>
 
       {/* 4 · THE OUTPUT — full-bleed wall of results */}
       <section className="sec dark">
         <div className="wrap">
-          <div className="kick reveal">04 · The output</div>
-          <h2 className="h2 reveal">The output, at scale.</h2>
-          <p className="lead reveal">
-            Hundreds of launch-ready images, generated from a repeatable visual
-            system — not one campaign, but a production engine.
-          </p>
+          <div className="kick reveal">{t.outputKick}</div>
+          <h2 className="h2 reveal">{t.outputH2}</h2>
+          <p className="lead reveal">{t.outputLead}</p>
         </div>
         <div className="gallery reveal">
           {GALLERY.map((src, i) => (
             <figure className="gtile" key={i}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="ADV — launch-ready output" loading="lazy" />
+              <img src={src} alt={t.outputAlt} loading="lazy" />
             </figure>
           ))}
         </div>
-        <p className="gallery-cap reveal">
-          Selected launch frames · one repeatable system
-        </p>
+        <p className="gallery-cap reveal">{t.outputCap}</p>
       </section>
 
       {/* 8 · OUTCOME */}
       <section className="sec light">
         <div className="wrap">
-          <div className="kick reveal">05 · Outcome</div>
-          <h2 className="h2 reveal">The result, in numbers.</h2>
+          <div className="kick reveal">{t.outcomeKick}</div>
+          <h2 className="h2 reveal">{t.outcomeH2}</h2>
           <div className="metrics">
-            {[
-              ["250", "Products"],
-              ["72h", "Start to delivery"],
-              ["2", "Signature models"],
-              ["3", "Frames per product"],
-              ["~750", "Final images"],
-              // NOTE: confirm the real, defensible figure before publishing.
-              ["~70%", "Lower production cost"],
-            ].map(([num, label]) => (
+            {t.metrics.map(([num, label]) => (
               <div className="m reveal" key={label}>
                 <div className="num">{num}</div>
                 <div className="ml">{label}</div>
@@ -703,7 +937,8 @@ export default function AdvCase() {
             ))}
           </div>
           <h3 className="knockout reveal">
-            Launched on time — <em>without a single photoshoot.</em>
+            {t.knockout.pre}
+            <em>{t.knockout.em}</em>
           </h3>
         </div>
       </section>
@@ -711,25 +946,15 @@ export default function AdvCase() {
       {/* 6 · AND AFTER (close) */}
       <section className="sec dark close">
         <div className="wrap">
-          <div className="kick reveal">06 · And after</div>
-          <h2 className="h2 reveal">
-            The launch wasn&apos;t a one-off. It became a system the brand keeps
-            building on.
-          </h2>
-          <p className="lead reveal">
-            The cast, the visual language and the orchestration remain — ready
-            for the next collection, the next drop, the next season. Not a batch
-            of images, but visual infrastructure the brand now owns.
-          </p>
+          <div className="kick reveal">{t.afterKick}</div>
+          <h2 className="h2 reveal">{t.afterH2}</h2>
+          <p className="lead reveal">{t.afterLead}</p>
           <div className="cta-row reveal">
-            <a
-              className="btn solid"
-              href="mailto:info@lioralabs.io?subject=Working%20with%20Liora"
-            >
-              Get in touch →
+            <a className="btn solid" href={mailto(lang)}>
+              {t.cta}
             </a>
-            <a className="btn ghost" href="/#work">
-              Next work →
+            <a className="btn ghost" href={localize(lang, "/#work")}>
+              {t.next}
             </a>
           </div>
         </div>
@@ -737,12 +962,11 @@ export default function AdvCase() {
 
       <footer className="foot">
         <div className="wrap">
-          <a className="wm" href="/" aria-label="Liora — home">
+          <a className="wm" href={localize(lang, "/")} aria-label="Liora — home">
             LIORA
           </a>
           <div className="c">
-            © {new Date().getFullYear()} Liora Labs · An AI-native creative
-            systems lab
+            © {new Date().getFullYear()} Liora Labs · {t.footer}
           </div>
         </div>
       </footer>
@@ -2064,11 +2288,11 @@ export default function AdvCase() {
             margin-bottom: 7px;
           }
           .cmp-row .l::before {
-            content: "Traditional";
+            content: attr(data-label);
             color: var(--on-mut);
           }
           .cmp-row .r::before {
-            content: "Liora";
+            content: attr(data-label);
             color: var(--gold);
           }
         }

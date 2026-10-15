@@ -2,8 +2,27 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const KEY = "liora-cookie-consent"; // "accepted" | "essential"
+
+// Mounted once in the root layout, so the language comes from the path.
+const COPY = {
+  en: {
+    aria: "Cookie preferences",
+    body: "We use essential cookies to make this site work. With your consent we may also use analytics to understand what resonates — decline and nothing is lost.",
+    privacy: "Privacy Policy",
+    essential: "Essential only",
+    accept: "Accept",
+  },
+  tr: {
+    aria: "Çerez tercihleri",
+    body: "Bu sitenin çalışması için zorunlu çerezleri kullanıyoruz. İzin verirseniz neyin ilgi gördüğünü anlamak için analiz çerezlerini de kullanabiliriz; reddederseniz hiçbir şey eksilmez.",
+    privacy: "Gizlilik Politikası",
+    essential: "Yalnızca zorunlu",
+    accept: "Kabul et",
+  },
+};
 
 /**
  * A quiet, editorial cookie-consent bar. The site currently sets no tracking
@@ -13,6 +32,8 @@ const KEY = "liora-cookie-consent"; // "accepted" | "essential"
  */
 export default function CookieConsent() {
   const [show, setShow] = useState(false);
+  const pathname = usePathname() ?? "";
+  const t = COPY[pathname === "/tr" || pathname.startsWith("/tr/") ? "tr" : "en"];
 
   useEffect(() => {
     let stored: string | null = null;
@@ -48,19 +69,17 @@ export default function CookieConsent() {
   return (
     <div
       role="dialog"
-      aria-label="Cookie preferences"
+      aria-label={t.aria}
       className="consent-banner fixed inset-x-0 bottom-0 z-[200] border-t border-white/10 bg-ink text-on-dark"
     >
       <div className="wrap flex flex-col gap-4 py-5 md:flex-row md:items-center md:justify-between md:gap-10">
         <p className="body-s max-w-2xl !text-on-dark-mut">
-          We use essential cookies to make this site work. With your consent we
-          may also use analytics to understand what resonates — decline and
-          nothing is lost.{" "}
+          {t.body}{" "}
           <Link
             href="/gizlilik"
             className="text-on-dark underline decoration-gold underline-offset-2 transition-colors duration-300 ease-liora hover:text-gold"
           >
-            Privacy Policy
+            {t.privacy}
           </Link>
           .
         </p>
@@ -71,14 +90,14 @@ export default function CookieConsent() {
             onClick={() => choose("essential")}
             className="rounded-[2px] border border-white/25 px-4 py-2.5 font-ui text-[13px] leading-none text-on-dark transition-colors duration-300 ease-liora hover:border-on-dark focus-visible:outline-2"
           >
-            Essential only
+            {t.essential}
           </button>
           <button
             type="button"
             onClick={() => choose("accepted")}
             className="rounded-[2px] border border-bone bg-bone px-4 py-2.5 font-ui text-[13px] font-medium leading-none text-ink transition-colors duration-300 ease-liora hover:border-oxblood hover:bg-oxblood hover:text-bone focus-visible:outline-2"
           >
-            Accept
+            {t.accept}
           </button>
         </div>
       </div>

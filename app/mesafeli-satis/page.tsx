@@ -97,6 +97,7 @@ export default function MesafeliSatisPage() {
       kicker="Yasal"
       updatedLabel="Son güncelleme"
       backLabel="Ana sayfaya dön"
+      lang="tr"
     >
       <ReactMarkdown>{content}</ReactMarkdown>
     </LegalLayout>

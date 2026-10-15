@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
+import type { Lang } from "@/lib/i18n";
 
 /**
  * The questions brands actually ask, answered plainly.
@@ -18,7 +19,7 @@ import Reveal from "./Reveal";
  * structured data is generated from this same list, so the markup can never
  * drift from what a visitor reads.
  */
-const FAQS = [
+const FAQS_EN = [
   {
     q: "What is Liora Labs?",
     a: "Liora Labs is an AI-native creative systems lab for fashion, beauty and design-led brands. Instead of producing one-off AI images, we design a bespoke visual system for each brand — one that keeps producing on-brand imagery for catalogue, campaign and commerce long after the first delivery.",
@@ -45,17 +46,61 @@ const FAQS = [
   },
 ];
 
-const faqSchema = {
+const FAQS_TR = [
+  {
+    q: "Liora Labs nedir?",
+    a: "Liora Labs; moda, güzellik ve tasarım odaklı markalar için yapay zekâ temelli bir yaratıcı sistemler laboratuvarıdır. Tek seferlik yapay zekâ görselleri üretmek yerine her marka için ona özel bir görsel sistem tasarlarız. Bu sistem, ilk teslimattan çok sonra da katalog, kampanya ve e-ticaret için markanın diline sadık görseller üretmeye devam eder.",
+  },
+  {
+    q: "Kimlerle çalışıyorsunuz?",
+    a: "Görsellerini çoğaltırken onları tanınır kılan şeyi kaybetmek istemeyen moda, güzellik ve tasarım odaklı markalarla. Bağımsızız, Türkiye merkezliyiz, dünyanın her yerinden markalarla çalışıyoruz ve aynı anda yalnızca az sayıda markayı üstleniyoruz.",
+  },
+  {
+    q: "Bunun yapay zekâyla görsel üretmekten farkı ne?",
+    a: "Tek bir görseli herkes üretebilir. Zor olan, bininci görselin de hâlâ markanız gibi görünmesi. Biz bunun altındaki sistemi kuruyoruz: manken seçimi, styling mantığı, kadraj ve kare planı. Böylece sonuç bir prompt piyangosuna dönüşmüyor, tutarlı kalıyor.",
+  },
+  {
+    q: "Bu, fotoğraf çekiminin yerini tutar mı?",
+    a: "Çoğu zaman çekime gerek bırakmaz. ADV (Orka Holding) için 250 ürünlük bir markayı tek bir çekim yapmadan 72 saatte yayına aldık: ürün başına üç kare, yaklaşık 750 final görsel. Marka bu sistemi sonrasında da kullanmaya devam etti.",
+  },
+  {
+    q: "Liora Atelier nedir?",
+    a: "Liora Atelier, markaların kendi diline sadık, yüksek kaliteli görselleri ölçekli olarak kendilerinin ürettiği özel platformumuz. Şu an kapalı betada ve talep üzerine erişime açık.",
+  },
+  {
+    q: "Nasıl başlıyoruz?",
+    a: "info@lioralabs.io adresine yazın ya da aşağıdaki formdan neyi büyüttüğünüzü ve neyi kaybetmek istemediğinizi anlatın. Her iş farklı bir kısıtla başlar; bu yüzden ilk görüşme hazır bir paket üzerine değil, o kısıt üzerine olur.",
+  },
+];
+
+const FAQS = { en: FAQS_EN, tr: FAQS_TR };
+
+const COPY = {
+  en: {
+    kick: "06 · ANSWERS",
+    h2: { pre: "Questions we’re often ", soul: "asked", post: "." },
+    aside: "If yours isn’t here, write to us — we answer everything directly.",
+  },
+  tr: {
+    kick: "06 · SORULAR",
+    h2: { pre: "Bize en çok ", soul: "sorulanlar", post: "." },
+    aside: "Sorunuz burada yoksa bize yazın; her soruyu doğrudan yanıtlıyoruz.",
+  },
+};
+
+const faqSchema = (lang: Lang) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: FAQS.map((f) => ({
+  inLanguage: lang,
+  mainEntity: FAQS[lang].map((f) => ({
     "@type": "Question",
     name: f.q,
     acceptedAnswer: { "@type": "Answer", text: f.a },
   })),
-};
+});
 
-export default function Answers() {
+export default function Answers({ lang = "en" }: { lang?: Lang }) {
+  const t = COPY[lang];
   // One open at a time; the first is open so the section never reads as empty.
   const [open, setOpen] = useState<number>(0);
 
@@ -67,20 +112,19 @@ export default function Answers() {
           className="mb-[clamp(36px,5vw,64px)] flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
         >
           <div className="max-w-xl">
-            <p className="meta mb-5">06 · ANSWERS</p>
+            <p className="meta mb-5">{t.kick}</p>
             <h2 className="d2 text-ink">
-              Questions we&rsquo;re often <span className="soul">asked</span>.
+              {t.h2.pre}
+              <span className="soul">{t.h2.soul}</span>
+              {t.h2.post}
             </h2>
           </div>
-          <p className="body-s !max-w-sm !text-text-mut">
-            If yours isn&rsquo;t here, write to us — we answer everything
-            directly.
-          </p>
+          <p className="body-s !max-w-sm !text-text-mut">{t.aside}</p>
         </Reveal>
 
         <Reveal delay={0.05}>
           <ul className="border-t border-stone/70">
-            {FAQS.map((f, i) => {
+            {FAQS[lang].map((f, i) => {
               const isOpen = open === i;
               return (
                 <li
@@ -162,7 +206,7 @@ export default function Answers() {
       {/* Mirrors the visible Q&A above — generated from the same source. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(lang)) }}
       />
     </section>
   );

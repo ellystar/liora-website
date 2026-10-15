@@ -7,7 +7,7 @@ import { Newsreader, Spline_Sans_Mono } from "next/font/google";
  * Italic is rationed — reserved for the words that carry the soul.
  */
 export const newsreader = Newsreader({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"], // latin-ext carries Turkish ğ ş ı İ
   display: "swap",
   weight: ["300", "400", "500"],
   style: ["normal", "italic"],
@@ -19,7 +19,7 @@ export const newsreader = Newsreader({
  * Mono — Spline Sans Mono (data, meta, index). Exact match to the brief.
  */
 export const splineMono = Spline_Sans_Mono({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"], // latin-ext carries Turkish ğ ş ı İ
   display: "swap",
   weight: ["400", "500", "600"],
   variable: "--font-mono",

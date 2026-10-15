@@ -3,6 +3,18 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type { Lang } from "@/lib/i18n";
+
+const COPY = {
+  en: {
+    line1: "AI can generate visuals.",
+    line2: { pre: "Only aesthetic intelligence can ", soul: "preserve", post: " a brand." },
+  },
+  tr: {
+    line1: "Yapay zekâ görsel üretebilir.",
+    line2: { pre: "Bir markayı ancak estetik zekâ ", soul: "koruyabilir", post: "." },
+  },
+};
 
 /**
  * Aesthetic Intelligence — the closing signature. Left-aligned, like the site.
@@ -13,7 +25,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * the image is gone. The full synced version (image tears open in sync) is saved
  * at components/Signature.synced.tsx.bak — restore it once a fitting image exists.
  */
-export default function Signature() {
+export default function Signature({ lang = "en" }: { lang?: Lang }) {
+  const t = COPY[lang];
   const section = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const line2 = useRef<HTMLSpanElement>(null);
@@ -90,11 +103,12 @@ export default function Signature() {
         <div className="max-w-2xl">
           <h2 className="d1 !text-[clamp(34px,5vw,62px)] text-ink">
             <span ref={line1} className="block">
-              AI can generate visuals.
+              {t.line1}
             </span>
             <span ref={line2} className="mt-[0.45em] block">
-              Only aesthetic intelligence can{" "}
-              <span className="soul text-oxblood">preserve</span> a brand.
+              {t.line2.pre}
+              <span className="soul text-oxblood">{t.line2.soul}</span>
+              {t.line2.post}
             </span>
           </h2>
         </div>

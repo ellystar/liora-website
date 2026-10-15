@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Footer from "./Footer";
+import LangScope from "./LangScope";
+import { type Lang, localize } from "@/lib/i18n";
 
 /**
  * Shell for the legal pages (Privacy, Terms). A quiet static header (no anchor
@@ -12,6 +14,7 @@ export default function LegalLayout({
   kicker = "Legal",
   updatedLabel = "Last updated",
   backLabel = "Back to home",
+  lang = "en",
 }: {
   title: string;
   updated: string;
@@ -19,20 +22,21 @@ export default function LegalLayout({
   kicker?: string;
   updatedLabel?: string;
   backLabel?: string;
+  lang?: Lang;
 }) {
   return (
-    <>
+    <LangScope lang={lang}>
       <header className="border-b border-stone bg-bone">
         <div className="wrap flex items-center justify-between py-5">
           <Link
-            href="/"
+            href={localize(lang, "/")}
             className="font-display text-[21px] leading-none tracking-wordmark text-ink"
             aria-label="Liora — home"
           >
             LIORA
           </Link>
           <Link
-            href="/"
+            href={localize(lang, "/")}
             className="group inline-flex items-center gap-1.5 font-ui text-[13px] text-text-mut transition-colors duration-300 ease-liora hover:text-ink"
           >
             <span
@@ -59,7 +63,7 @@ export default function LegalLayout({
         </article>
       </main>
 
-      <Footer />
-    </>
+      <Footer lang={lang} />
+    </LangScope>
   );
 }

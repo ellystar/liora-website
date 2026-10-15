@@ -13,7 +13,7 @@ import Close from "@/components/Close";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", languages: { en: "/", tr: "/tr" } },
 };
 
 export default function Home() {
