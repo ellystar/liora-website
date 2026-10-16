@@ -29,16 +29,16 @@ const ROOM_POS = [
 // from the live collection.
 const RULE_IMG = [
   "/kigili/frame-2.jpg",
-  "/kigili/cat-6.jpg",
+  "/kigili/rule-knit.jpg",
   "/kigili/cat-9.jpg",
-  "/kigili/cat-12.jpg",
+  "/kigili/rule-suit.jpg",
   "/kigili/cat-3.jpg",
 ];
 
 // Layer 04 · Orchestration — the real six frames of one piece per group, in
 // plan order (two editorial, then e-commerce), shown beside the graph.
 const FRAME_IMG = [
-  [1, 6, 2, 4, 5, 3].map((k) => `/kigili/frame-${k}.jpg`), // shirt (delivered)
+  [1, 2, 3, 4, 5, 6].map((k) => `/kigili/shirt-${k}.jpg`),
   [1, 2, 3, 4, 5, 6].map((k) => `/kigili/knit-${k}.jpg`),
   [1, 2, 3, 4, 5, 6].map((k) => `/kigili/trou-${k}.jpg`),
   [1, 2, 3, 4, 5, 6].map((k) => `/kigili/suit-${k}.jpg`),
@@ -142,7 +142,7 @@ const COPY = {
       {
         title: "Knitwear is always layered",
         line: "A collar, a tee or a check shirt shows beneath every knit.",
-        look: "Shirt and tie under a polo knit",
+        look: "Check shirt under a half-zip knit",
       },
       {
         title: "When the trouser leads, the top steps back",
@@ -152,7 +152,7 @@ const COPY = {
       {
         title: "Tailoring, dressed down",
         line: "A tee, a chain, sneakers — or a black shirt and sunglasses in hand.",
-        look: "White tee, chain, sneakers",
+        look: "Black shirt, sunglasses in hand",
       },
       {
         title: "Accessories stay in the editorial",
@@ -334,7 +334,7 @@ const COPY = {
       {
         title: "Triko her zaman katmanlı",
         line: "Her trikonun altından bir yaka, bir tişört ya da ekose bir gömlek görünüyor.",
-        look: "Polo triko altında gömlek ve kravat",
+        look: "Fermuarlı triko altında ekose gömlek",
       },
       {
         title: "Pantolon öndeyse üst geri çekilir",
@@ -344,7 +344,7 @@ const COPY = {
       {
         title: "Takım, rahatlatılmış",
         line: "Bir tişört, bir zincir, sneaker; ya da siyah gömlek ve elde güneş gözlüğü.",
-        look: "Beyaz tişört, zincir, sneaker",
+        look: "Siyah gömlek, elde güneş gözlüğü",
       },
       {
         title: "Aksesuar editoryalde kalır",
@@ -484,9 +484,44 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
   const [orchHover, setOrchHover] = useState<string | null>(null);
   const [frameOn, setFrameOn] = useState<{ g: number; k: number }>({ g: 0, k: 0 });
   const allCats = t.blocks.flatMap((b) => b.cats);
+  const orchRef = useRef<HTMLDivElement>(null);
+  const pointing = useRef(false);
 
   // Layer 03 — the rule in view; the list on the left switches it.
   const [ruleOn, setRuleOn] = useState(0);
+
+  // Layer 04 — as the graph scrolls, the group nearest the middle of the
+  // screen opens on its frame 01; pointing at a frame still wins.
+  useEffect(() => {
+    const el = orchRef.current;
+    if (!el) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        if (pointing.current) return;
+        const line = window.innerHeight * 0.5;
+        let best = -1;
+        let bestD = Infinity;
+        el.querySelectorAll<Element>("[data-cat]").forEach((node) => {
+          const r = node.getBoundingClientRect();
+          if (!r.height) return;
+          const d = Math.abs(r.top + r.height / 2 - line);
+          if (d < bestD) {
+            bestD = d;
+            best = Number(node.getAttribute("data-cat"));
+          }
+        });
+        if (best >= 0) setFrameOn((f) => (f.g === best ? f : { g: best, k: 0 }));
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   useEffect(() => {
     const el = root.current;
@@ -779,7 +814,12 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
 
         <div className="orch-grid">
         <div className="orch-left">
-        <div className="orch reveal">
+        <div
+          className="orch reveal"
+          ref={orchRef}
+          onPointerEnter={(e) => (pointing.current = e.pointerType === "mouse")}
+          onPointerLeave={() => (pointing.current = false)}
+        >
           {t.blocks.map((b, bi) => {
             const base = t.blocks.slice(0, bi).reduce((n, x) => n + x.cats.length, 0);
             return (
@@ -835,6 +875,7 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
                       return (
                         <g key={g.key}>
                           <g
+                            data-cat={gi}
                             className={`orx-node orx-hit orx-cat ${st}`}
                             tabIndex={0}
                             role="button"
@@ -905,6 +946,38 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
                       );
                     })}
                   </svg>
+                </div>
+                {/* phones: the same plan as a list, each frame with its image */}
+                <div className="orl">
+                  {b.cats.map((g, j) => (
+                    <div className="orl-cat" key={g.key} data-cat={base + j}>
+                      <div className="orl-head">
+                        <span>{g.label}</span>
+                        <span className="orl-code">{g.code}</span>
+                      </div>
+                      <ol>
+                        {g.frames.map((f, k) => (
+                          <li className={f.moves ? "mv" : ""} key={k}>
+                            <span className="orl-thumb">
+                              <Image
+                                src={FRAME_IMG[base + j][k]}
+                                alt={`${t.previewAlt} ${g.label}, ${t.frame} 0${k + 1}`}
+                                fill
+                                quality={90}
+                                sizes="64px"
+                                style={{ objectFit: "cover" }}
+                              />
+                            </span>
+                            <span className="orl-no">0{k + 1}</span>
+                            <span className="orl-text">
+                              <span className="orl-set">{f.set}</span>
+                              <span className="orl-pose">{f.pose}</span>
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ))}
                 </div>
               </div>
             );
@@ -1620,7 +1693,7 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
           display: grid;
           grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
           gap: clamp(32px, 6vw, 96px);
-          align-items: center;
+          align-items: start;
         }
         .rule-list {
           margin: 0;
@@ -1781,13 +1854,84 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
           font-weight: 400;
           color: var(--gold);
         }
+        .orl {
+          display: none;
+        }
+        /* below 900px the graph and its preview can't sit side by side: the
+           plan becomes a list with an image on every frame */
         @media (max-width: 900px) {
           .orch-grid {
             grid-template-columns: 1fr;
           }
+          .orx-scroll,
           .preview {
-            position: static;
-            width: min(380px, 100%);
+            display: none;
+          }
+          .orl {
+            display: grid;
+            gap: 26px;
+            margin-top: 14px;
+          }
+          .orl-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--on-line);
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--on);
+          }
+          .orl-code {
+            font-size: 10px;
+            color: var(--on-mut);
+          }
+          .orl ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+          }
+          .orl li {
+            display: grid;
+            grid-template-columns: 56px 26px 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--on-line);
+          }
+          .orl-thumb {
+            position: relative;
+            width: 56px;
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+            border-radius: var(--r);
+            background: var(--ink-2);
+          }
+          .orl-no {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--on-mut);
+          }
+          .orl-text {
+            display: grid;
+            gap: 4px;
+          }
+          .orl-set {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--on-mut);
+          }
+          .orl-pose {
+            font-family: var(--ui);
+            font-size: 14.5px;
+            color: var(--on);
+          }
+          .orl li.mv .orl-pose {
+            color: var(--gold);
           }
         }
 
@@ -2136,7 +2280,8 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
             min-width: 720px;
           }
           .wall {
-            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            padding: 0 4px;
           }
         }
 
@@ -2249,6 +2394,21 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
 
         @media (max-width: 680px) {
           .scrollcue {
+            display: none;
+          }
+          .chero .scrim {
+            background: linear-gradient(
+              to bottom,
+              rgba(16, 14, 11, 0.72) 0%,
+              rgba(16, 14, 11, 0) 26%,
+              rgba(16, 14, 11, 0.35) 55%,
+              rgba(16, 14, 11, 0.9) 100%
+            );
+          }
+          .face-side {
+            order: -1;
+          }
+          .studio-ph {
             display: none;
           }
         }

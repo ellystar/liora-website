@@ -111,6 +111,19 @@ const COPY = {
   },
 };
 
+// Brand names keep their Latin capitals inside a Turkish uppercase line:
+// "Signature" must never become "SİGNATURE".
+const latinBrand = (text: string) =>
+  text.split(/(Signature)/).map((part, i) =>
+    part === "Signature" ? (
+      <span lang="en" key={i}>
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+
 const CARD_SIZES = "(max-width: 640px) 92vw, (max-width: 768px) 46vw, 360px";
 
 export default function FeaturedWork({ lang = "en" }: { lang?: Lang }) {
@@ -144,7 +157,7 @@ export default function FeaturedWork({ lang = "en" }: { lang?: Lang }) {
                 <div className="meta !text-on-dark-mut">{w.num}</div>
                 <h3 className="d4 mt-1.5 max-w-[16ch] text-on-dark">{w.title}</h3>
                 <p className="mt-2 font-mono text-[10px] uppercase tracking-meta text-on-dark-mut">
-                  {w.tag}
+                  {latinBrand(w.tag)}
                 </p>
               </div>
             );
