@@ -10,11 +10,10 @@ export const metadata: Metadata = {
     canonical: "/tr/work/kigili",
     languages: { en: "/work/kigili", tr: "/tr/work/kigili" },
   },
-  // NOTE: kept out of search until the placeholder frames are replaced.
-  robots: { index: false, follow: false },
   openGraph: {
     title: "Kiğılı Signature — Editoryal, seri hâlinde",
     description: "Sistem olarak çalışan bir premium çekim: 50 parça, editoryal ve e-ticaret, üç günde.",
+    images: ["/kigili-hero.jpg"],
     locale: "tr_TR",
   },
 };

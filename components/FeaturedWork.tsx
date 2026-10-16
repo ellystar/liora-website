@@ -24,9 +24,11 @@ const WORK: Record<Lang, Work[]> = {
     },
     {
       num: "02",
-      title: "Designing a styling consistency for a denim brand",
-      tag: "Editorial system · Private",
-      art: "/img/velata.jpg",
+      title: "Editorial, by the batch",
+      tag: "Editorial system · Kiğılı Signature",
+      art: "/img/kigili-1.jpg",
+      reveal: "/img/kigili-card.jpg",
+      href: "/work/kigili",
     },
     {
       num: "03",
@@ -46,9 +48,11 @@ const WORK: Record<Lang, Work[]> = {
     },
     {
       num: "02",
-      title: "Bir denim markası için tutarlı bir styling dili",
-      tag: "Editoryal sistem · Gizli",
-      art: "/img/velata.jpg",
+      title: "Editoryal, seri hâlinde",
+      tag: "Editoryal sistem · Kiğılı Signature",
+      art: "/img/kigili-1.jpg",
+      reveal: "/img/kigili-card.jpg",
+      href: "/work/kigili",
     },
     {
       num: "03",
