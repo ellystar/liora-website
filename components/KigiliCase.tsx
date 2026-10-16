@@ -259,7 +259,7 @@ const COPY = {
       ["1", "Face, for Signature alone"],
       ["0", "Sets built"],
     ],
-    // NOTE: shortened from İrem Parlak's answer — confirm the wording with Kiğılı.
+    // Shortened from İrem Parlak’s answer; wording approved by Kiğılı.
     quote: "The products were the same, but the story we were telling our customers had completely changed. After the images went live, the rise in sales showed the change paid off commercially, not just visually.",
     quoteName: "İrem Parlak",
     quoteRole: "E-Commerce Category Specialist, Kiğılı",
@@ -451,7 +451,6 @@ const COPY = {
       ["1", "Yüz, yalnızca Signature için"],
       ["0", "Kurulan set"],
     ],
-    // NOTE: İrem Parlak'ın yanıtından kısaltıldı — metni Kiğılı'yla teyit et.
     quote: "Ürünler aynıydı ama müşteriye sunduğumuz hikâye tamamen değişmişti. Görselleri yayına aldıktan sonra satışlarda gördüğümüz artış, bu dönüşümün yalnızca görsel olarak değil, ticari açıdan da karşılık bulduğunu gösterdi.",
     quoteName: "İrem Parlak",
     quoteRole: "E-Ticaret Kategori Uzmanı, Kiğılı",
