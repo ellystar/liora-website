@@ -777,7 +777,6 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
           <p className="modhead-line">{t.orchLine}</p>
         </header>
 
-        {/* NOTE: confirm the knitwear frame plan with the 50-piece batch. */}
         <div className="orch-grid">
         <div className="orch-left">
         <div className="orch reveal">
