@@ -4,7 +4,7 @@ import KigiliCase from "@/components/KigiliCase";
 export const metadata: Metadata = {
   title: "Kiğılı Signature · Editorial System",
   description:
-    "How Liora ran an editorial brief as a batch for Kiğılı Signature — 50 pieces in one premium room, editorial and e-commerce from one flow, in three days.",
+    "How Liora turned every part of a premium shoot — the face, the set, the styling and the direction — into one system for Kiğılı Signature, and ran it across 50 pieces in three days.",
   alternates: {
     canonical: "/work/kigili",
     languages: { en: "/work/kigili", tr: "/tr/work/kigili" },
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Kiğılı Signature — Editorial, by the batch",
     description:
-      "50 pieces, one room, three days — editorial and e-commerce from one flow.",
+      "A premium shoot, run as a system: 50 pieces, editorial and e-commerce, in three days.",
   },
 };
 
