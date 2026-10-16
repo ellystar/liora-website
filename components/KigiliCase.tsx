@@ -485,13 +485,13 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
   const [frameOn, setFrameOn] = useState<{ g: number; k: number }>({ g: 0, k: 0 });
   const allCats = t.blocks.flatMap((b) => b.cats);
   const orchRef = useRef<HTMLDivElement>(null);
-  const pointing = useRef(false);
 
   // Layer 03 — the rule in view; the list on the left switches it.
   const [ruleOn, setRuleOn] = useState(0);
 
-  // Layer 04 — as the graph scrolls, the group nearest the middle of the
-  // screen opens on its frame 01; pointing at a frame still wins.
+  // Layer 04 — as the graph scrolls past a line just above the middle of
+  // the screen, the preview steps through the frames one by one. Pointing at
+  // a frame shows it too; the next scroll takes over again.
   useEffect(() => {
     const el = orchRef.current;
     if (!el) return;
@@ -499,20 +499,15 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        if (pointing.current) return;
-        const line = window.innerHeight * 0.5;
-        let best = -1;
-        let bestD = Infinity;
-        el.querySelectorAll<Element>("[data-cat]").forEach((node) => {
-          const r = node.getBoundingClientRect();
-          if (!r.height) return;
-          const d = Math.abs(r.top + r.height / 2 - line);
-          if (d < bestD) {
-            bestD = d;
-            best = Number(node.getAttribute("data-cat"));
-          }
-        });
-        if (best >= 0) setFrameOn((f) => (f.g === best ? f : { g: best, k: 0 }));
+        // every frame gets an equal share of the graph's height, so each step
+        // of the wheel moves the preview on by about one frame
+        const r = el.getBoundingClientRect();
+        if (!r.height) return;
+        const frames = FRAME_IMG.length * 6;
+        const p = (window.innerHeight * 0.42 - r.top) / r.height;
+        const i = Math.min(frames - 1, Math.max(0, Math.floor(p * frames)));
+        const next = { g: Math.floor(i / 6), k: i % 6 };
+        setFrameOn((f) => (f.g === next.g && f.k === next.k ? f : next));
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -814,12 +809,7 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
 
         <div className="orch-grid">
         <div className="orch-left">
-        <div
-          className="orch reveal"
-          ref={orchRef}
-          onPointerEnter={(e) => (pointing.current = e.pointerType === "mouse")}
-          onPointerLeave={() => (pointing.current = false)}
-        >
+        <div className="orch reveal" ref={orchRef}>
           {t.blocks.map((b, bi) => {
             const base = t.blocks.slice(0, bi).reduce((n, x) => n + x.cats.length, 0);
             return (
@@ -897,6 +887,7 @@ export default function KigiliCase({ lang = "en" }: { lang?: Lang }) {
                           {g.frames.map((f, k) => (
                             <g
                               key={`fr${k}`}
+                              data-frame={`${gi}-${k}`}
                               className={`orx-node orx-frame orx-hit ${st}${frameOn.g === gi && frameOn.k === k ? " fon" : ""}`}
                               tabIndex={0}
                               role="button"
