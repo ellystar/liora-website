@@ -9,7 +9,6 @@ type Work = {
   tag: string;
   art: string; // the card cover image
   reveal?: string; // hover: dissolves the cover into the real work
-  revealPos?: string; // object-position for the reveal, when its subject isn't centred
   href?: string; // present = the case study is live and the card is clickable
 };
 
@@ -28,8 +27,7 @@ const WORK: Record<Lang, Work[]> = {
       title: "Editorial, by the batch",
       tag: "Editorial system · Kiğılı Signature",
       art: "/img/kigili-1.jpg",
-      reveal: "/kigili-hero.jpg",
-      revealPos: "78% 30%",
+      reveal: "/img/kigili-card.jpg",
       href: "/work/kigili",
     },
     {
@@ -53,8 +51,7 @@ const WORK: Record<Lang, Work[]> = {
       title: "Editoryal, seri hâlinde",
       tag: "Editoryal sistem · Kiğılı Signature",
       art: "/img/kigili-1.jpg",
-      reveal: "/kigili-hero.jpg",
-      revealPos: "78% 30%",
+      reveal: "/img/kigili-card.jpg",
       href: "/work/kigili",
     },
     {
@@ -160,6 +157,7 @@ export default function FeaturedWork({ lang = "en" }: { lang?: Lang }) {
                   src={w.art}
                   alt={`${w.title} — ${t.cover}`}
                   fill
+                  quality={90}
                   sizes={CARD_SIZES}
                   className="object-cover object-center [filter:saturate(1.02)_contrast(1.02)] transition-opacity duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover/read:opacity-0"
                 />
@@ -167,9 +165,9 @@ export default function FeaturedWork({ lang = "en" }: { lang?: Lang }) {
                   src={w.reveal!}
                   alt=""
                   fill
+                  quality={90}
                   sizes={CARD_SIZES}
                   className="object-cover object-[50%_32%] opacity-0 transition-opacity duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover/read:opacity-100"
-                  style={w.revealPos ? { objectPosition: w.revealPos } : undefined}
                 />
                 <div className="pointer-events-none absolute bottom-5 right-5 z-20 flex translate-y-1 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-on-dark opacity-0 transition duration-500 ease-liora group-hover/read:translate-y-0 group-hover/read:opacity-100">
                   {t.read} <span aria-hidden>→</span>
@@ -185,6 +183,7 @@ export default function FeaturedWork({ lang = "en" }: { lang?: Lang }) {
                   src={w.art}
                   alt=""
                   fill
+                  quality={90}
                   sizes={CARD_SIZES}
                   className="object-cover object-center grayscale-[0.5] brightness-[0.5] transition duration-700 ease-liora group-hover/soon:brightness-[0.32]"
                 />
